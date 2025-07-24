@@ -1,5 +1,5 @@
 import React from 'react'
-import { Target, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, DollarSign } from 'lucide-react'
+import { Target, TrendingDown, CheckCircle, DollarSign } from 'lucide-react'
 
 interface BudgetSummaryData {
   totalOrcado: number

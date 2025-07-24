@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react'
+import { AlertTriangle, CheckCircle } from 'lucide-react'
 import { BudgetWithProgress } from '../../hooks/useBudgets'
 
 interface BudgetAlertsProps {

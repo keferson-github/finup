@@ -1,5 +1,5 @@
 import React from 'react'
-import { Edit, Trash2, AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react'
+import { Edit, Trash2, AlertTriangle, CheckCircle } from 'lucide-react'
 import { BudgetWithProgress } from '../../hooks/useBudgets'
 
 interface BudgetCardProps {

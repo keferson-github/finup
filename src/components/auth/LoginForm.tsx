@@ -29,7 +29,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="card">
+      <div className="card h-[600px] flex flex-col">
         <div className="text-center mb-6">
           <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-lg p-4 mb-4 border border-blue-200 dark:border-blue-700">
             <div className="text-xl mb-1">💰📈</div>
@@ -40,7 +40,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
           <p className="text-sm text-fg-muted dark:text-fg-dark-muted mt-1">Entre para gerenciar suas finanças</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 flex-grow flex flex-col justify-center">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-1">
               Email
@@ -94,15 +94,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-fg-muted dark:text-fg-dark-muted">
-            Não tem uma conta?{' '}
+          <div className="flex items-center pt-4 mb-1 justify-center gap-1">
+            <span className="text-fg-muted dark:text-fg-dark-muted">Não tem uma conta?</span>
             <button
               onClick={onToggleMode}
               className="text-accent-fg dark:text-accent-dark-fg hover:text-accent-emphasis dark:hover:text-accent-dark-emphasis font-medium transition-colors"
             >
               Cadastre-se
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </div>

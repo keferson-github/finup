@@ -66,18 +66,18 @@ export const AuthPage: React.FC = () => {
 
         {/* Right Side - Auth Forms */}
         <div className="w-full relative overflow-hidden">
-          <div className="transition-all duration-500 ease-in-out transform">
-            <div className={`transition-all duration-500 ease-in-out transform ${
+          <div className="transition-all duration-300 ease-out transform">
+            <div className={`transition-all duration-300 ease-out transform ${
               isLogin 
-                ? 'translate-x-0 opacity-100' 
-                : '-translate-x-full opacity-0 absolute top-0 left-0 w-full'
+                ? 'translate-x-0 opacity-100 scale-100' 
+                : '-translate-x-full opacity-0 scale-95 absolute inset-0'
             }`}>
               <LoginForm onToggleMode={() => setIsLogin(false)} />
             </div>
-            <div className={`transition-all duration-500 ease-in-out transform ${
+            <div className={`transition-all duration-300 ease-out transform ${
               !isLogin 
-                ? 'translate-x-0 opacity-100' 
-                : 'translate-x-full opacity-0 absolute top-0 left-0 w-full'
+                ? 'translate-x-0 opacity-100 scale-100' 
+                : 'translate-x-full opacity-0 scale-95 absolute inset-0'
             }`}>
               <SignUpForm onToggleMode={() => setIsLogin(true)} />
             </div>

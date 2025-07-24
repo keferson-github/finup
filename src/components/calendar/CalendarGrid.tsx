@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, isToday, getDay } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, getDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { CheckCircle, Clock, AlertCircle, Plus, Eye } from 'lucide-react'
+import { CheckCircle, Clock, AlertCircle, Plus } from 'lucide-react'
 import { CalendarTransaction, DaySummary } from '../../hooks/useCalendar'
 import { TransactionDetailModal } from './TransactionDetailModal'
 

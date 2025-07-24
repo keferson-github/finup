@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Tag, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { useState } from 'react'
 import { useCategories } from '../hooks/useCategories'
 import { CategoryForm } from '../components/categories/CategoryForm'

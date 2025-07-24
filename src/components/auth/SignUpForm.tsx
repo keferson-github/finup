@@ -30,13 +30,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="card">
+      <div className="card h-[600px] flex flex-col">
         <div className="text-center mb-6">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-4 mb-4 border border-green-200 dark:border-green-700">
+            <div className="text-xl mb-1">🚀💰</div>
+            <h3 className="text-base font-bold text-green-600 dark:text-green-400 mb-1">Comece Sua Jornada Financeira!</h3>
+            <p className="text-xs text-fg-muted dark:text-fg-dark-muted">Junte-se a milhares de usuários que já transformaram suas finanças com o <span className="font-semibold text-success-emphasis dark:text-success-dark-emphasis">FinUp</span></p>
+          </div>
           <h2 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">Criar Conta</h2>
           <p className="text-sm text-fg-muted dark:text-fg-dark-muted mt-1">Comece a gerenciar suas finanças com o <span className="font-semibold text-success-emphasis dark:text-success-dark-emphasis">FinUp</span></p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 flex-grow flex flex-col justify-center">
           <div>
             <label htmlFor="fullName" className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-1">
               Nome
@@ -109,15 +114,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-fg-muted dark:text-fg-dark-muted">
-            Já tem uma conta?{' '}
+          <div className="flex items-center pt-4 mb-1 justify-center gap-1">
+            <span className="text-fg-muted transform -translate-y-1/2 dark:text-fg-dark-muted">Já tem uma conta?</span>
             <button
               onClick={onToggleMode}
-              className="text-accent-fg dark:text-accent-dark-fg hover:text-accent-emphasis dark:hover:text-accent-dark-emphasis font-medium transition-colors"
+              className="text-accent-fg transform -translate-y-1/2 dark:text-accent-dark-fg hover:text-accent-emphasis dark:hover:text-accent-dark-emphasis font-medium transition-colors"
             >
               Entrar
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </div>
