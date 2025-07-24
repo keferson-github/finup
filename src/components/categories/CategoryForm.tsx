@@ -2,15 +2,15 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { X, Tag, Palette, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
+import { X, Tag, Palette, TrendingDown, TrendingUp } from 'lucide-react'
 import { useCategories } from '../../hooks/useCategories'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 
 const categorySchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
+  nome: z.string().min(1, 'Nome é obrigatório'),
   tipo: z.enum(['receita', 'despesa']),
-  color: z.string().min(1, 'Cor é obrigatória'),
-  icon: z.string().min(1, 'Ícone é obrigatório'),
+  cor: z.string().min(1, 'Cor é obrigatória'),
+  icone: z.string().min(1, 'Ícone é obrigatório'),
   descricao: z.string().optional()
 })
 
@@ -19,24 +19,11 @@ type CategoryFormData = z.infer<typeof categorySchema>
 interface CategoryFormProps {
   isOpen: boolean
   onClose: () => void
-  initialData?: Partial<CategoryFormData>
+  initialData?: Partial<CategoryFormData & { id: string }>
   mode?: 'create' | 'edit'
 }
 
-const icons = [
-  // Ícones para despesas
-  '🍔', '🛒', '🏠', '🚗', '⛽', '💊', '🎓', '🎮', 
-  '✈️', '👕', '🏥', '🚌', '☕', '📱', '⚡', '🎬',
-  '💇', '🏋️', '🎵', '📚', '🐕', '🔧', '🎁', '💄',
-  // Ícones para receitas
-  '💰', '💼', '📈', '🏆', '💎', '🎯', '⭐', '🔥'
-]
 
-const colors = [
-  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-  '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6B7280',
-  '#F43F5E', '#14B8A6', '#8B5A2B', '#7C3AED', '#DC2626'
-]
 
 export const CategoryForm: React.FC<CategoryFormProps> = ({
   isOpen,
@@ -51,22 +38,20 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     register,
     handleSubmit,
     watch,
-    setValue,
     reset,
     formState: { errors }
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       tipo: 'despesa',
-      color: colors[0],
-      icon: icons[0],
+      cor: '',
+      icone: '',
       ...initialData
     }
   })
 
   const watchTipo = watch('tipo')
-  const watchColor = watch('color')
-  const watchIcon = watch('icon')
+  const watchColor = watch('cor')
 
   const onSubmit = async (data: CategoryFormData) => {
     setIsSubmitting(true)
@@ -162,13 +147,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
               <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
               <input
                 type="text"
-                {...register('name')}
+                {...register('nome')}
                 className="input pl-10"
-                placeholder="Ex: Alimentação"
+                placeholder="Nome da categoria"
               />
             </div>
-            {errors.name && (
-              <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.name.message}</p>
+            {errors.nome && (
+              <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.nome.message}</p>
             )}
           </div>
 
@@ -176,20 +161,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
             <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
               Ícone *
             </label>
-            <div className="grid grid-cols-8 gap-2 max-h-32 overflow-y-auto border border-border-default dark:border-border-dark-default rounded-lg p-2 bg-canvas-subtle dark:bg-canvas-dark-subtle">
-              {icons.map((icon) => (
-                <button
-                  key={icon}
-                  type="button"
-                  onClick={() => setValue('icon', icon)}
-                  className={`p-3 text-xl border-2 rounded-lg transition-all hover:scale-110 ${
-                    watchIcon === icon ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle' : 'border-border-default dark:border-border-dark-default'
-                  }`}
-                >
-                  {icon}
-                </button>
-              ))}
-            </div>
+            <input
+              type="text"
+              {...register('icone')}
+              className="input"
+              placeholder="Digite um emoji (ex: 🍔, 💰, 🏠)"
+              maxLength={2}
+            />
             {errors.icone && (
               <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.icone.message}</p>
             )}
@@ -201,18 +179,20 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
             </label>
             <div className="flex items-center space-x-2">
               <Palette className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setValue('color', color)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110' : 'border-border-default dark:border-border-dark-default'
-                    }`}
-                    style={{ backgroundColor: color }}
+              <div className="flex items-center space-x-2 flex-1">
+                <input
+                  type="text"
+                  {...register('cor')}
+                  className="input flex-1"
+                  placeholder="Digite um código de cor (ex: #3B82F6, #10B981)"
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                />
+                {watchColor && (
+                  <div
+                    className="w-8 h-8 rounded-full border-2 border-border-default dark:border-border-dark-default"
+                    style={{ backgroundColor: watchColor }}
                   />
-                ))}
+                )}
               </div>
             </div>
             {errors.cor && (

@@ -408,39 +408,8 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
--- Função para criar categorias padrão
-CREATE OR REPLACE FUNCTION create_default_categories()
-RETURNS trigger AS $$
-BEGIN
-  -- Categorias de receita
-  INSERT INTO categories (user_id, nome, tipo, cor, icone) VALUES
-    (new.id, 'Salário', 'receita', '#10B981', '💰'),
-    (new.id, 'Freelance', 'receita', '#059669', '💻'),
-    (new.id, 'Investimentos', 'receita', '#047857', '📈'),
-    (new.id, 'Vendas', 'receita', '#065F46', '🛒'),
-    (new.id, 'Outros', 'receita', '#064E3B', '💵');
-
-  -- Categorias de despesa
-  INSERT INTO categories (user_id, nome, tipo, cor, icone) VALUES
-    (new.id, 'Alimentação', 'despesa', '#EF4444', '🍔'),
-    (new.id, 'Transporte', 'despesa', '#DC2626', '🚗'),
-    (new.id, 'Moradia', 'despesa', '#B91C1C', '🏠'),
-    (new.id, 'Saúde', 'despesa', '#991B1B', '💊'),
-    (new.id, 'Educação', 'despesa', '#7F1D1D', '🎓'),
-    (new.id, 'Lazer', 'despesa', '#F59E0B', '🎮'),
-    (new.id, 'Compras', 'despesa', '#D97706', '🛍️'),
-    (new.id, 'Contas', 'despesa', '#B45309', '📄'),
-    (new.id, 'Outros', 'despesa', '#92400E', '📦');
-
-  RETURN new;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Trigger para criar categorias padrão
-DROP TRIGGER IF EXISTS on_profile_created ON profiles;
-CREATE TRIGGER on_profile_created
-  AFTER INSERT ON profiles
-  FOR EACH ROW EXECUTE FUNCTION create_default_categories();
+-- Função para criar categorias padrão foi removida
+-- Os usuários agora devem criar suas próprias categorias
 
 -- Função para atualizar timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, Upload, FileText, AlertCircle, CheckCircle, Download } from 'lucide-react'
+import { X, Upload, AlertCircle, CheckCircle, Download } from 'lucide-react'
 import { useDataImport } from '../../hooks/useDataImport'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 
@@ -45,11 +45,7 @@ export const DataImportModal: React.FC<DataImportModalProps> = ({
   }
 
   const downloadTemplate = () => {
-    const csvContent = `title,amount,date,type,category,description
-Salary,5000,2024-01-01,income,Salary,Monthly salary
-Groceries,150,2024-01-02,expense,Food,Weekly groceries
-Gas,80,2024-01-03,expense,Transport,Car fuel
-Freelance,800,2024-01-04,income,Freelance,Web development project`
+    const csvContent = `title,amount,date,type,category,description`
 
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = window.URL.createObjectURL(blob)

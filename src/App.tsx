@@ -63,31 +63,48 @@ function App() {
             position="top-right"
             toastOptions={{
               duration: 4000,
-              className: 'shadow-lg rounded-lg font-medium',
+              className: 'shadow-lg font-medium',
               style: {
-                padding: '12px 16px',
-                maxWidth: '400px',
-                fontSize: '14px',
+              backgroundColor: '#0D1117',
+              color: '#FAFAFA',
+              borderRadius: '6px',
+              padding: '20px',
+              maxWidth: '450px',
+              fontSize: '14px',
+              minWidth: '300px',
+                border: 'none',
               },
               success: {
-                className: 'toast-success',
+                style: {
+                  backgroundColor: '#0D1117',
+                  color: '#FAFAFA',
+                  borderRadius: '6px',
+                },
                 iconTheme: {
                   primary: '#2da44e',
-                  secondary: 'white',
+                  secondary: '#0D1117',
                 },
               },
               error: {
-                className: 'toast-error',
+                style: {
+                  backgroundColor: '#0D1117',
+                  color: '#FAFAFA',
+                  borderRadius: '6px',
+                },
                 iconTheme: {
                   primary: '#cf222e',
-                  secondary: 'white',
+                  secondary: '#0D1117',
                 },
               },
               loading: {
-                className: 'toast-loading',
+                style: {
+                  backgroundColor: '#0D1117',
+                  color: '#FAFAFA',
+                  borderRadius: '6px',
+                },
                 iconTheme: {
                   primary: '#0969da',
-                  secondary: 'white',
+                  secondary: '#0D1117',
                 },
               },
             }}

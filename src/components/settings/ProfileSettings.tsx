@@ -10,7 +10,10 @@ import { ptBR } from 'date-fns/locale'
 
 const profileSchema = z.object({
   nome_completo: z.string().min(1, 'Nome é obrigatório'),
-  avatar_url: z.string().url('URL inválida').optional().or(z.literal(''))
+  avatar_url: z.string().refine(
+    (val) => val === '' || z.string().url().safeParse(val).success,
+    { message: 'URL inválida' }
+  ).optional()
 })
 
 type ProfileFormData = z.infer<typeof profileSchema>
@@ -23,20 +26,31 @@ export const ProfileSettings: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty },
+    reset
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      nome_completo: profile?.nome_completo || '',
-      avatar_url: profile?.avatar_url || ''
+      nome_completo: '',
+      avatar_url: ''
     }
   })
+
+  // Atualizar valores do formulário quando o profile for carregado
+  React.useEffect(() => {
+    if (profile) {
+      reset({
+        nome_completo: profile.nome_completo || '',
+        avatar_url: profile.avatar_url || ''
+      })
+    }
+  }, [profile, reset])
 
   React.useEffect(() => {
     if (profile) {
       getAccountStats().then(setAccountStats)
     }
-  }, [profile])
+  }, [profile, getAccountStats])
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsSubmitting(true)
@@ -44,7 +58,7 @@ export const ProfileSettings: React.FC = () => {
     try {
       await updateProfile({
         nome_completo: data.nome_completo,
-        avatar_url: data.avatar_url || null
+        avatar_url: data.avatar_url || undefined
       })
     } catch (error) {
       console.error('Erro ao atualizar perfil:', error)
@@ -80,7 +94,7 @@ export const ProfileSettings: React.FC = () => {
               ) : (
                 <div className="w-20 h-20 rounded-full bg-gradient-to-r from-success-emphasis to-accent-emphasis dark:from-success-dark-emphasis dark:to-accent-dark-emphasis flex items-center justify-center">
                   <span className="text-2xl font-bold text-white">
-                    {(profile.nome_completo || profile.email)[0].toUpperCase()}
+                    {(profile.nome_completo || profile.email || 'U')[0].toUpperCase()}
                   </span>
                 </div>
               )}
@@ -103,10 +117,10 @@ export const ProfileSettings: React.FC = () => {
               URL da Foto de Perfil
             </label>
             <input
-              type="url"
+              type="text"
               {...register('avatar_url')}
               className="input"
-              placeholder="https://exemplo.com/sua-foto.jpg"
+              placeholder="URL da sua foto de perfil (opcional)"
             />
             {errors.avatar_url && (
               <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.avatar_url.message}</p>
@@ -141,7 +155,7 @@ export const ProfileSettings: React.FC = () => {
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
               <input
                 type="email"
-                value={profile.email}
+                value={profile.email || ''}
                 disabled
                 className="input pl-10 bg-canvas-subtle dark:bg-canvas-dark-subtle text-fg-muted dark:text-fg-dark-muted cursor-not-allowed"
               />

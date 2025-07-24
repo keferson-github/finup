@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ onAddTransaction }) => {
   const { user } = useAuthContext()
 
   return (
-    <header className="bg-canvas-default dark:bg-canvas-dark-default border-b border-border-default dark:border-border-dark-default px-6 py-4">
+    <header className="fixed top-0 right-0 left-64 bg-canvas-default dark:bg-canvas-dark-default border-b border-border-default dark:border-border-dark-default px-6 py-4 z-20">
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1 max-w-lg">
           <div className="relative w-full">

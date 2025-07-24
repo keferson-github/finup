@@ -29,7 +29,7 @@ export const Sidebar: React.FC = () => {
   const { signOut } = useAuthContext()
 
   return (
-    <div className="flex h-full w-64 flex-col bg-canvas-default dark:bg-canvas-dark-default border-r border-border-default dark:border-border-dark-default">
+    <div className="fixed left-0 top-0 flex h-full w-64 flex-col bg-canvas-default dark:bg-canvas-dark-default border-r border-border-default dark:border-border-dark-default z-10">
       <div className="flex flex-col flex-1">
         <div className="px-6 py-8">
           <Logo size="md" showText={true} />
