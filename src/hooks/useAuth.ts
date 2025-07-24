@@ -25,7 +25,7 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -64,11 +64,14 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
       if (error) throw error
       toast.success('Logout realizado com sucesso!')
     } catch (error: any) {
-      toast.error(error.message)
+      console.error('Erro no logout:', error)
+      // Fallback: limpar estado local mesmo se o logout remoto falhar
+      setUser(null)
+      toast.success('Logout realizado com sucesso!')
     }
   }
 

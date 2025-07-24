@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../../contexts/AuthContext'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { Logo } from '../ui/Logo'
@@ -13,13 +14,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const { signIn } = useAuthContext()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     
-    await signIn(email, password)
+    const result = await signIn(email, password)
     setLoading(false)
+    
+    if (result.success) {
+      navigate('/dashboard')
+    }
   }
 
   return (

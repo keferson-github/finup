@@ -34,6 +34,7 @@ const AppRoutes: React.FC = () => {
           <Layout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/accounts" element={<Accounts />} />
               <Route path="/categories" element={<Categories />} />
@@ -62,13 +63,32 @@ function App() {
             position="top-right"
             toastOptions={{
               duration: 4000,
-              className: 'dark:bg-canvas-dark-overlay dark:text-fg-dark-default dark:border-border-dark-default',
+              className: 'shadow-lg rounded-lg font-medium',
               style: {
-                background: 'var(--toast-bg)',
-                color: 'var(--toast-color)',
-                border: '1px solid var(--toast-border)',
-                borderRadius: '6px',
+                padding: '12px 16px',
+                maxWidth: '400px',
                 fontSize: '14px',
+              },
+              success: {
+                className: 'toast-success',
+                iconTheme: {
+                  primary: '#2da44e',
+                  secondary: 'white',
+                },
+              },
+              error: {
+                className: 'toast-error',
+                iconTheme: {
+                  primary: '#cf222e',
+                  secondary: 'white',
+                },
+              },
+              loading: {
+                className: 'toast-loading',
+                iconTheme: {
+                  primary: '#0969da',
+                  secondary: 'white',
+                },
               },
             }}
           />

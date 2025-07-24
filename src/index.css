@@ -199,4 +199,25 @@
   .progress-danger {
     @apply bg-danger-emphasis dark:bg-danger-dark-emphasis;
   }
+
+  /* Toast Notifications - GitHub Theme */
+  .toast-success {
+    @apply bg-[#dafbe1] text-[#1a7f37] border border-[#2da44e]/30 shadow-lg rounded-lg;
+    @apply dark:bg-[#033a16] dark:text-[#3fb950] dark:border-[#2ea043]/50;
+  }
+
+  .toast-error {
+    @apply bg-[#ffebe9] text-[#cf222e] border border-[#cf222e]/30 shadow-lg rounded-lg;
+    @apply dark:bg-[#490202] dark:text-[#f85149] dark:border-[#da3633]/50;
+  }
+
+  .toast-loading {
+    @apply bg-[#ddf4ff] text-[#0969da] border border-[#0969da]/30 shadow-lg rounded-lg;
+    @apply dark:bg-[#0c2d6b] dark:text-[#79c0ff] dark:border-[#1f6feb]/50;
+  }
+
+  .toast-warning {
+    @apply bg-[#fff8c5] text-[#9a6700] border border-[#d1242f]/30 shadow-lg rounded-lg;
+    @apply dark:bg-[#341a00] dark:text-[#f2cc60] dark:border-[#9e6a03]/50;
+  }
 }
