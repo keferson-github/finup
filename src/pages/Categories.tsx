@@ -43,36 +43,36 @@ export const Categories: React.FC = () => {
   }
 
   const CategoryCard = ({ category }: { category: any }) => (
-    <div className="card p-4 hover:shadow-md transition-shadow">
+    <div className="card p-3 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div 
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
             style={{ backgroundColor: `${category.cor}20` }}
           >
             {category.icone}
           </div>
-          <div className="ml-3">
-            <h4 className="font-medium text-fg-default dark:text-fg-dark-default">{category.nome}</h4>
+          <div className="ml-2">
+            <h4 className="font-medium text-sm text-fg-default dark:text-fg-dark-default">{category.nome}</h4>
             {category.descricao && (
-              <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{category.descricao}</p>
+              <p className="text-xs text-fg-muted dark:text-fg-dark-muted">{category.descricao}</p>
             )}
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <button
             onClick={() => handleEdit(category)}
-            className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
+            className="p-1 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
             title="Editar categoria"
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-3 w-3" />
           </button>
           <button
             onClick={() => handleDelete(category)}
-            className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-danger-fg dark:hover:text-danger-dark-fg transition-colors"
+            className="p-1 text-fg-muted dark:text-fg-dark-muted hover:text-danger-fg dark:hover:text-danger-dark-fg transition-colors"
             title="Excluir categoria"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3 w-3" />
           </button>
         </div>
       </div>
@@ -80,17 +80,17 @@ export const Categories: React.FC = () => {
   )
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Categorias</h1>
-          <p className="text-gray-600 mt-2">Organize suas transações por categoria</p>
+          <h1 className="text-2xl font-bold text-gray-900">Categorias</h1>
+          <p className="text-gray-600 text-sm mt-1">Organize suas transações</p>
         </div>
         <button 
           onClick={() => handleNewCategory()}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+          className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-1" />
           Nova Categoria
         </button>
       </div>
@@ -100,52 +100,52 @@ export const Categories: React.FC = () => {
           <LoadingSpinner size="lg" />
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Tabs */}
           <div className="card p-0">
             <div className="flex border-b border-border-default dark:border-border-dark-default">
               <button
                 onClick={() => setActiveTab('despesa')}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'despesa'
                     ? 'text-danger-fg dark:text-danger-dark-fg border-b-2 border-danger-emphasis dark:border-danger-dark-emphasis bg-danger-subtle dark:bg-danger-dark-subtle'
                     : 'text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default'
                 }`}
               >
                 <div className="flex items-center justify-center">
-                  <TrendingDown className="h-5 w-5 mr-2" />
+                  <TrendingDown className="h-4 w-4 mr-1" />
                   Despesas ({expenseCategories.length})
                 </div>
               </button>
               <button
                 onClick={() => setActiveTab('receita')}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'receita'
                     ? 'text-success-fg dark:text-success-dark-fg border-b-2 border-success-emphasis dark:border-success-dark-emphasis bg-success-subtle dark:bg-success-dark-subtle'
                     : 'text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default'
                 }`}
               >
                 <div className="flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
+                  <TrendingUp className="h-4 w-4 mr-1" />
                   Receitas ({incomeCategories.length})
                 </div>
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-4">
               {activeTab === 'receita' ? (
                 /* Categorias de Receita */
                 incomeCategories.length === 0 ? (
-                  <div className="text-center py-12">
-                    <TrendingUp className="h-16 w-16 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma categoria de receita</h3>
-                    <p className="text-fg-muted dark:text-fg-dark-muted mb-6">Crie categorias para organizar suas fontes de renda.</p>
+                  <div className="text-center py-8">
+                    <TrendingUp className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-3" />
+                    <h3 className="text-base font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma categoria de receita</h3>
+                    <p className="text-sm text-fg-muted dark:text-fg-dark-muted mb-4">Crie categorias para organizar suas receitas.</p>
                     <button 
                       onClick={() => handleNewCategory('receita')}
-                      className="btn btn-primary flex items-center mx-auto"
+                      className="btn btn-primary flex items-center mx-auto text-sm"
                     >
-                      <Plus className="h-5 w-5 mr-2" />
-                      Criar Categoria de Receita
+                      <Plus className="h-4 w-4 mr-1" />
+                      Criar Categoria
                     </button>
                   </div>
                 ) : (
@@ -158,16 +158,16 @@ export const Categories: React.FC = () => {
               ) : (
                 /* Categorias de Despesa */
                 expenseCategories.length === 0 ? (
-                  <div className="text-center py-12">
-                    <TrendingDown className="h-16 w-16 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma categoria de despesa</h3>
-                    <p className="text-fg-muted dark:text-fg-dark-muted mb-6">Crie categorias para organizar seus gastos.</p>
+                  <div className="text-center py-8">
+                    <TrendingDown className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-3" />
+                    <h3 className="text-base font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma categoria de despesa</h3>
+                    <p className="text-sm text-fg-muted dark:text-fg-dark-muted mb-4">Crie categorias para organizar seus gastos.</p>
                     <button 
                       onClick={() => handleNewCategory('despesa')}
-                      className="btn btn-danger flex items-center mx-auto"
+                      className="btn btn-danger flex items-center mx-auto text-sm"
                     >
-                      <Plus className="h-5 w-5 mr-2" />
-                      Criar Categoria de Despesa
+                      <Plus className="h-4 w-4 mr-1" />
+                      Criar Categoria
                     </button>
                   </div>
                 ) : (
@@ -181,36 +181,7 @@ export const Categories: React.FC = () => {
             </div>
           </div>
 
-          {/* Resumo */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gradient-to-r from-success-emphasis to-success-fg dark:from-success-dark-emphasis dark:to-success-dark-fg rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <TrendingUp className="h-8 w-8 mb-2" />
-                  <h3 className="text-lg font-semibold">Categorias de Receita</h3>
-                  <p className="text-success-subtle dark:text-success-dark-subtle">Organize suas fontes de renda</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold">{incomeCategories.length}</div>
-                  <div className="text-success-subtle dark:text-success-dark-subtle text-sm">categorias</div>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-gradient-to-r from-danger-emphasis to-danger-fg dark:from-danger-dark-emphasis dark:to-danger-dark-fg rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <TrendingDown className="h-8 w-8 mb-2" />
-                  <h3 className="text-lg font-semibold">Categorias de Despesa</h3>
-                  <p className="text-danger-subtle dark:text-danger-dark-subtle">Organize seus gastos</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold">{expenseCategories.length}</div>
-                  <div className="text-danger-subtle dark:text-danger-dark-subtle text-sm">categorias</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
