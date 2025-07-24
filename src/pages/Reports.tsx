@@ -90,9 +90,7 @@ export const Reports: React.FC = () => {
         />
 
         {/* Relatório por Conta */}
-        <div className="xl:col-span-2">
-          <AccountReport data={accountReports} loading={loading} />
-        </div>
+        <AccountReport data={accountReports} loading={loading} />
       </div>
 
       {/* Evolução Temporal */}

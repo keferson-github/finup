@@ -73,7 +73,7 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border-default dark:border-border-dark-default">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">Excluir Categoria</h2>
           <button

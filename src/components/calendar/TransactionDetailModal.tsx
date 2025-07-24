@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, CheckCircle, Clock, AlertCircle, Calendar, CreditCard, Tag, FileText, Repeat, Calculator } from 'lucide-react'
+import { X, CheckCircle, Clock, AlertCircle, Calendar, CreditCard, Tag, Repeat, Calculator } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CalendarTransaction } from '../../hooks/useCalendar'
@@ -87,7 +87,7 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">Detalhes da Transação</h2>
           <button

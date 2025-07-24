@@ -1,24 +1,63 @@
-import React, { useState } from 'react'
-import { Globe, Palette, DollarSign, Calendar, Settings as SettingsIcon, Save } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Globe, Palette, Calendar, Settings as SettingsIcon, Save } from 'lucide-react'
 import { useSettings } from '../../hooks/useSettings'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 
 export const PreferencesSettings: React.FC = () => {
-  const { preferences, updatePreferences } = useSettings()
+  const { preferences, updatePreferences, loading } = useSettings()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [localPreferences, setLocalPreferences] = useState(preferences)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Sincronizar localPreferences quando preferences mudar
+  useEffect(() => {
+    if (preferences && !isInitialized) {
+      setLocalPreferences(preferences)
+      setIsInitialized(true)
+    } else if (preferences && isInitialized) {
+      // Apenas atualizar se não há mudanças locais pendentes
+      const hasLocalChanges = localPreferences && JSON.stringify(preferences) !== JSON.stringify(localPreferences)
+      if (!hasLocalChanges) {
+        setLocalPreferences(preferences)
+      }
+    }
+  }, [preferences, isInitialized, localPreferences])
 
   const handlePreferenceChange = (key: string, value: any) => {
-    setLocalPreferences(prev => ({
-      ...prev,
-      [key]: value
-    }))
+    setLocalPreferences(prev => {
+      if (!prev) {
+        // Se prev for null/undefined, criar um objeto com valores padrão
+        return {
+          idioma: 'pt-BR',
+          tema: 'claro',
+          moeda: 'BRL',
+          formato_data: 'DD/MM/YYYY',
+          arredondamento: false,
+          notificacoes_email: true,
+          alertas_orcamento: true,
+          [key]: value
+        }
+      }
+      return {
+        ...prev,
+        [key]: value
+      }
+    })
   }
 
   const handleSave = async () => {
+    if (!localPreferences) {
+      console.error('Nenhuma preferência para salvar')
+      return
+    }
+
     setIsSubmitting(true)
     try {
-      await updatePreferences(localPreferences)
+      const result = await updatePreferences(localPreferences)
+      if (result?.success) {
+        // Atualizar o estado de inicialização para refletir as mudanças salvas
+        setIsInitialized(true)
+      }
     } catch (error) {
       console.error('Erro ao salvar preferências:', error)
     } finally {
@@ -26,7 +65,17 @@ export const PreferencesSettings: React.FC = () => {
     }
   }
 
-  const hasChanges = JSON.stringify(preferences) !== JSON.stringify(localPreferences)
+  const hasChanges = preferences && localPreferences && JSON.stringify(preferences) !== JSON.stringify(localPreferences)
+
+  // Mostrar loading enquanto carrega as preferências
+  if (loading || !isInitialized) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
+        <span className="ml-3 text-fg-muted dark:text-fg-dark-muted">Carregando preferências...</span>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -43,7 +92,7 @@ export const PreferencesSettings: React.FC = () => {
               Idioma do Sistema
             </label>
             <select
-              value={localPreferences.idioma}
+              value={localPreferences?.idioma || 'pt-BR'}
               onChange={(e) => handlePreferenceChange('idioma', e.target.value)}
               className="input"
             >
@@ -58,7 +107,7 @@ export const PreferencesSettings: React.FC = () => {
               Moeda Padrão
             </label>
             <select
-              value={localPreferences.moeda}
+              value={localPreferences?.moeda || 'BRL'}
               onChange={(e) => handlePreferenceChange('moeda', e.target.value)}
               className="input"
             >
@@ -92,12 +141,12 @@ export const PreferencesSettings: React.FC = () => {
                 <input
                   type="radio"
                   value={tema.value}
-                  checked={localPreferences.tema === tema.value}
+                  checked={(localPreferences?.tema || 'claro') === tema.value}
                   onChange={(e) => handlePreferenceChange('tema', e.target.value)}
                   className="sr-only"
                 />
                 <div className={`p-4 border-2 rounded-lg cursor-pointer transition-all text-center ${
-                  localPreferences.tema === tema.value
+                  (localPreferences?.tema || 'claro') === tema.value
                     ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
                     : 'border-border-default dark:border-border-dark-default hover:border-border-muted dark:hover:border-border-dark-muted'
                 }`}>
@@ -123,7 +172,7 @@ export const PreferencesSettings: React.FC = () => {
               Formato de Data
             </label>
             <select
-              value={localPreferences.formato_data}
+              value={localPreferences?.formato_data || 'DD/MM/YYYY'}
               onChange={(e) => handlePreferenceChange('formato_data', e.target.value)}
               className="input"
             >
@@ -137,7 +186,7 @@ export const PreferencesSettings: React.FC = () => {
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"
-                checked={localPreferences.arredondamento}
+                checked={localPreferences?.arredondamento || false}
                 onChange={(e) => handlePreferenceChange('arredondamento', e.target.checked)}
                 className="h-4 w-4 text-accent-emphasis dark:text-accent-dark-emphasis focus:ring-accent-emphasis dark:focus:ring-accent-dark-emphasis border-border-default dark:border-border-dark-default rounded"
               />
@@ -161,7 +210,7 @@ export const PreferencesSettings: React.FC = () => {
           <label className="flex items-center space-x-3">
             <input
               type="checkbox"
-              checked={localPreferences.notificacoes_email}
+              checked={localPreferences?.notificacoes_email || false}
               onChange={(e) => handlePreferenceChange('notificacoes_email', e.target.checked)}
               className="h-4 w-4 text-accent-emphasis dark:text-accent-dark-emphasis focus:ring-accent-emphasis dark:focus:ring-accent-dark-emphasis border-border-default dark:border-border-dark-default rounded"
             />
@@ -174,7 +223,7 @@ export const PreferencesSettings: React.FC = () => {
           <label className="flex items-center space-x-3">
             <input
               type="checkbox"
-              checked={localPreferences.alertas_orcamento}
+              checked={localPreferences?.alertas_orcamento || false}
               onChange={(e) => handlePreferenceChange('alertas_orcamento', e.target.checked)}
               className="h-4 w-4 text-accent-emphasis dark:text-accent-dark-emphasis focus:ring-accent-emphasis dark:focus:ring-accent-dark-emphasis border-border-default dark:border-border-dark-default rounded"
             />

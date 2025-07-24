@@ -50,12 +50,34 @@ export const useSettings = () => {
         .eq('id', user.id)
         .single()
 
-      if (error) throw error
+      if (error) {
+        // Se o perfil não existe, criar um novo
+        if (error.code === 'PGRST116') {
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              email: user.email,
+              nome_completo: user.user_metadata?.full_name || '',
+              avatar_url: user.user_metadata?.avatar_url || ''
+            })
+            .select()
+            .single()
 
-      setProfile(data)
+          if (createError) throw createError
+          setProfile(newProfile)
+        } else {
+          throw error
+        }
+      } else {
+        setProfile(data)
+      }
     } catch (error: any) {
       console.error('Erro ao carregar perfil:', error)
-      toast.error('Erro ao carregar dados do perfil')
+      // Só mostrar toast se não for um erro de perfil não encontrado
+      if (error.code !== 'PGRST116') {
+        toast.error('Erro ao carregar dados do perfil')
+      }
     } finally {
       setLoading(false)
     }
@@ -203,10 +225,10 @@ export const useSettings = () => {
   }, [])
 
   useEffect(() => {
-    if (user) {
+    if (user && !profile && !loading) {
       loadProfile()
     }
-  }, [user])
+  }, [user, profile, loading])
 
   return {
     profile,

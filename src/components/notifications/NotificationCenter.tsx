@@ -61,7 +61,7 @@ export const NotificationCenter: React.FC = () => {
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-canvas-default dark:bg-canvas-dark-default rounded-xl shadow-xl border border-border-default dark:border-border-dark-default z-50">
+        <div className="absolute right-0 top-full mt-2 w-96 bg-canvas-default dark:bg-canvas-dark-default rounded-xl border border-border-default dark:border-border-dark-default z-50">
           <div className="p-4 border-b border-border-default dark:border-border-dark-default">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Notificações</h3>

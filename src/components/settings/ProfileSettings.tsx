@@ -44,13 +44,15 @@ export const ProfileSettings: React.FC = () => {
         avatar_url: profile.avatar_url || ''
       })
     }
-  }, [profile, reset])
+  }, [profile])
 
   React.useEffect(() => {
     if (profile) {
-      getAccountStats().then(setAccountStats)
+      getAccountStats().then(setAccountStats).catch(error => {
+        console.error('Erro ao carregar estatísticas:', error)
+      })
     }
-  }, [profile, getAccountStats])
+  }, [profile])
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsSubmitting(true)

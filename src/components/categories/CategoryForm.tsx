@@ -81,7 +81,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl shadow-xl w-full max-w-md border border-border-default dark:border-border-dark-default">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border-default dark:border-border-dark-default">
         <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default">
           <h2 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">
             {mode === 'create' ? 'Nova Categoria' : 'Editar Categoria'}
