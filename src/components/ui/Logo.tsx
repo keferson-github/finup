@@ -26,15 +26,11 @@ export const Logo: React.FC<LogoProps> = ({
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
-        {/* Logo Background */}
-        <div className={`${sizeClasses[size]} rounded-lg flex items-center justify-center shadow-lg overflow-hidden`}>
-          <img 
-            src="/images/logo-finup.png" 
-            alt="FinUp Logo" 
-            className="w-full h-full object-contain p-1"
-          />
-        </div>
-
+        <img 
+          src="/images/logo-finup.png" 
+          alt="FinUp Logo" 
+          className={`${sizeClasses[size]} object-contain`}
+        />
       </div>
       
       {showText && (
