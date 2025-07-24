@@ -32,13 +32,13 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   const getStatusIcon = () => {
     switch (budget.status) {
       case 'ultrapassado':
-        return <AlertTriangle className="h-6 w-6 text-red-600" />
+        return <AlertTriangle className="h-4 w-4 text-red-600" />
       case 'alerta':
-        return <AlertTriangle className="h-6 w-6 text-amber-600" />
+        return <AlertTriangle className="h-4 w-4 text-amber-600" />
       case 'ok':
-        return <CheckCircle className="h-6 w-6 text-emerald-600" />
+        return <CheckCircle className="h-4 w-4 text-emerald-600" />
       default:
-        return <CheckCircle className="h-6 w-6 text-gray-400" />
+        return <CheckCircle className="h-4 w-4 text-gray-400" />
     }
   }
 
@@ -82,17 +82,24 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   }
 
   return (
-    <div className="card hover:shadow-md transition-shadow">
-      <div className="p-6">
+    <div 
+      className="card hover:shadow-md transition-shadow"
+      style={{
+        transform: 'translateZ(0)',
+        willChange: 'box-shadow',
+        contain: 'layout style paint'
+      }}
+    >
+      <div className="p-4">
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getStatusColor()}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor()}`}>
               {getStatusIcon()}
             </div>
-            <div className="ml-4">
-              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default">{budget.nome}</h3>
-              <div className="flex items-center text-sm text-fg-muted dark:text-fg-dark-muted">
+            <div className="ml-3">
+              <h3 className="font-medium text-base text-fg-default dark:text-fg-dark-default">{budget.nome}</h3>
+              <div className="flex items-center text-xs text-fg-muted dark:text-fg-dark-muted">
                 <span>{getPeriodLabel(budget.periodo)}</span>
                 {budget.categoria_principal && (
                   <>
@@ -123,8 +130,8 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
         </div>
 
         {/* Barra de Progresso */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Progresso</span>
             <div className="flex items-center">
               <span className={`text-sm font-medium mr-2 ${
@@ -151,7 +158,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
         </div>
 
         {/* Valores */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Valor Gasto</span>
             <span className="text-sm font-medium text-fg-default dark:text-fg-dark-default">
@@ -164,7 +171,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
               {formatCurrency(budget.valor_limite)}
             </span>
           </div>
-          <div className="flex items-center justify-between border-t border-border-default dark:border-border-dark-default pt-3">
+          <div className="flex items-center justify-between border-t border-border-default dark:border-border-dark-default pt-2">
             <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Valor Restante</span>
             <span className={`text-sm font-bold ${
               budget.valor_restante >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
@@ -177,13 +184,13 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
 
         {/* Descrição */}
         {budget.descricao && (
-          <div className="mt-4 pt-4 border-t border-border-default dark:border-border-dark-default">
-            <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{budget.descricao}</p>
+          <div className="mt-3 pt-3 border-t border-border-default dark:border-border-dark-default">
+            <p className="text-xs text-fg-muted dark:text-fg-dark-muted">{budget.descricao}</p>
           </div>
         )}
 
         {/* Período */}
-        <div className="mt-4 pt-4 border-t border-border-default dark:border-border-dark-default">
+        <div className="mt-3 pt-3 border-t border-border-default dark:border-border-dark-default">
           <div className="flex items-center text-xs text-fg-muted dark:text-fg-dark-muted">
             <span>Período: {budget.data_inicio}</span>
             {budget.data_fim && (

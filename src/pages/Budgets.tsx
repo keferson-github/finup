@@ -42,17 +42,17 @@ export const Budgets: React.FC = () => {
   const orcamentosEmAlerta = getOrcamentosEmAlerta()
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-fg-default dark:text-fg-dark-default">Orçamentos</h1>
-          <p className="text-fg-muted dark:text-fg-dark-muted mt-2">Defina limites de gastos e metas financeiras</p>
+          <h1 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">Orçamentos</h1>
+          <p className="text-fg-muted dark:text-fg-dark-muted text-sm mt-1">Controle seus gastos</p>
         </div>
         <button 
           onClick={() => setShowForm(true)}
-          className="btn btn-primary flex items-center"
+          className="btn btn-primary flex items-center text-sm"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-1" />
           Novo Orçamento
         </button>
       </div>
@@ -73,21 +73,21 @@ export const Budgets: React.FC = () => {
         </div>
       ) : budgets.length === 0 ? (
         <div className="card">
-          <div className="p-12 text-center">
-            <Target className="h-16 w-16 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhum orçamento encontrado</h3>
-            <p className="text-fg-muted dark:text-fg-dark-muted mb-6">Crie seu primeiro orçamento para começar a controlar seus gastos.</p>
+          <div className="p-6 text-center">
+            <Target className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-3" />
+            <h3 className="text-base font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhum orçamento</h3>
+            <p className="text-fg-muted dark:text-fg-dark-muted text-sm mb-4">Crie seu primeiro orçamento.</p>
             <button 
               onClick={() => setShowForm(true)}
-              className="btn btn-primary flex items-center mx-auto"
+              className="btn btn-primary flex items-center mx-auto text-sm"
             >
-              <Plus className="h-5 w-5 mr-2" />
-              Criar Primeiro Orçamento
+              <Plus className="h-4 w-4 mr-1" />
+              Criar Orçamento
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {budgets.map((budget) => (
             <BudgetCard
               key={budget.id}

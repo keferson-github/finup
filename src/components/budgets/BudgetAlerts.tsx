@@ -22,16 +22,16 @@ export const BudgetAlerts: React.FC<BudgetAlertsProps> = ({
 
   if (!hasAlerts) {
     return (
-      <div className="card mb-8">
+      <div className="card mb-4">
         <div className="text-center">
-          <div className="w-16 h-16 bg-success-subtle dark:bg-success-dark-subtle rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-8 w-8 text-success-fg dark:text-success-dark-fg" />
+          <div className="w-12 h-12 bg-success-subtle dark:bg-success-dark-subtle rounded-full flex items-center justify-center mx-auto mb-3">
+            <CheckCircle className="h-6 w-6 text-success-fg dark:text-success-dark-fg" />
           </div>
-          <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default mb-2">
-            Todos os Orçamentos Estão no Controle! 🎉
+          <h3 className="text-base font-semibold text-fg-default dark:text-fg-dark-default mb-2">
+            Orçamentos no Controle! 🎉
           </h3>
-          <p className="text-fg-muted dark:text-fg-dark-muted">
-            Parabéns! Você está mantendo seus gastos dentro dos limites estabelecidos.
+          <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
+            Seus gastos estão dentro dos limites.
           </p>
         </div>
       </div>
@@ -39,24 +39,24 @@ export const BudgetAlerts: React.FC<BudgetAlertsProps> = ({
   }
 
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-3 mb-4">
       {/* Orçamentos Ultrapassados */}
       {orcamentosUltrapassados.length > 0 && (
         <div className="alert alert-error">
-          <div className="flex items-center mb-4">
-            <AlertTriangle className="h-6 w-6 text-danger-fg dark:text-danger-dark-fg mr-3" />
+          <div className="flex items-center mb-3">
+            <AlertTriangle className="h-5 w-5 text-danger-fg dark:text-danger-dark-fg mr-2" />
             <div>
-              <h3 className="text-lg font-semibold text-danger-fg dark:text-danger-dark-fg">
-                Orçamentos Ultrapassados ({orcamentosUltrapassados.length})
+              <h3 className="text-base font-semibold text-danger-fg dark:text-danger-dark-fg">
+                Ultrapassados ({orcamentosUltrapassados.length})
               </h3>
-              <p className="text-sm text-danger-fg dark:text-danger-dark-fg">
-                Estes orçamentos excederam o limite estabelecido
+              <p className="text-xs text-danger-fg dark:text-danger-dark-fg">
+                Excederam o limite
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {orcamentosUltrapassados.map((budget) => (
-              <div key={budget.id} className="bg-canvas-default dark:bg-canvas-dark-default rounded-lg p-4 border border-danger-muted dark:border-danger-dark-muted">
+              <div key={budget.id} className="bg-canvas-default dark:bg-canvas-dark-default rounded-lg p-3 border border-danger-muted dark:border-danger-dark-muted">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-fg-default dark:text-fg-dark-default">{budget.nome}</h4>
                   <span className="text-sm font-bold text-danger-fg dark:text-danger-dark-fg">
@@ -79,20 +79,20 @@ export const BudgetAlerts: React.FC<BudgetAlertsProps> = ({
       {/* Orçamentos em Alerta */}
       {orcamentosEmAlerta.length > 0 && (
         <div className="alert alert-warning">
-          <div className="flex items-center mb-4">
-            <AlertTriangle className="h-6 w-6 text-attention-fg dark:text-attention-dark-fg mr-3" />
+          <div className="flex items-center mb-3">
+            <AlertTriangle className="h-5 w-5 text-attention-fg dark:text-attention-dark-fg mr-2" />
             <div>
-              <h3 className="text-lg font-semibold text-attention-fg dark:text-attention-dark-fg">
-                Orçamentos em Alerta ({orcamentosEmAlerta.length})
+              <h3 className="text-base font-semibold text-attention-fg dark:text-attention-dark-fg">
+                Em Alerta ({orcamentosEmAlerta.length})
               </h3>
-              <p className="text-sm text-attention-fg dark:text-attention-dark-fg">
-                Estes orçamentos estão próximos do limite
+              <p className="text-xs text-attention-fg dark:text-attention-dark-fg">
+                Próximos do limite
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {orcamentosEmAlerta.map((budget) => (
-              <div key={budget.id} className="bg-canvas-default dark:bg-canvas-dark-default rounded-lg p-4 border border-attention-muted dark:border-attention-dark-muted">
+              <div key={budget.id} className="bg-canvas-default dark:bg-canvas-dark-default rounded-lg p-3 border border-attention-muted dark:border-attention-dark-muted">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-fg-default dark:text-fg-dark-default">{budget.nome}</h4>
                   <span className="text-sm font-bold text-attention-fg dark:text-attention-dark-fg">

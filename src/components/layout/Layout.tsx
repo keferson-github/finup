@@ -13,7 +13,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Sidebar />
       <Header />
       <main className="flex-1 overflow-hidden ml-64">
-        <div className="h-full overflow-y-auto pt-20 pb-16">
+        <div 
+          className="h-full overflow-y-auto pt-20 pb-16"
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            transform: 'translateZ(0)',
+            willChange: 'scroll-position',
+            backfaceVisibility: 'hidden',
+            perspective: 1000
+          }}
+        >
           {children}
         </div>
       </main>

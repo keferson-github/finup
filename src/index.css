@@ -5,11 +5,22 @@
 @layer base {
   * {
     @apply border-border-default dark:border-border-dark-default;
+    /* Performance optimizations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   html {
     @apply scroll-smooth;
     overflow-x: hidden; /* Remove horizontal scrollbar */
+    /* Hardware acceleration for smooth scrolling */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
   }
   
   body {
@@ -18,6 +29,10 @@
     @apply text-fg-default dark:text-fg-dark-default;
     @apply transition-colors duration-200;
     overflow-x: hidden; /* Remove horizontal scrollbar */
+    /* Performance optimizations */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: scroll-position;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -51,6 +66,58 @@
   /* Ensure smooth scrolling for all elements */
   * {
     scroll-behavior: smooth;
+    /* Optimize rendering performance */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Optimize scrollable containers */
+  .overflow-y-auto,
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    contain: layout style paint;
+  }
+  
+  /* Optimize transitions and animations */
+  .transition-colors,
+  .transition-all,
+  .transition {
+    will-change: auto;
+    contain: layout;
+  }
+  
+  /* Optimize hover states */
+  .hover\:bg-accent-subtle:hover,
+  .hover\:bg-neutral-subtle:hover,
+  .dark\:hover\:bg-accent-dark-subtle:hover,
+  .dark\:hover\:bg-neutral-dark-subtle:hover {
+    will-change: background-color;
+    contain: paint;
+  }
+  
+  /* Optimize animations */
+  .animate-pulse {
+    will-change: opacity;
+    contain: layout;
+    transform: translateZ(0);
+  }
+  
+  /* Optimize shadow transitions */
+  .hover\:shadow-md {
+    will-change: box-shadow;
+    contain: layout;
+  }
+  
+  /* Optimize grid layouts */
+  .grid {
+    contain: layout;
+  }
+  
+  /* Optimize card components */
+  .card {
+    contain: layout style;
+    transform: translateZ(0);
   }
 }
 
