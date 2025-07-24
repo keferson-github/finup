@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border-default dark:border-border-dark-default;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply font-sans antialiased;
+    @apply bg-canvas-default dark:bg-canvas-dark-default;
+    @apply text-fg-default dark:text-fg-dark-default;
+    @apply transition-colors duration-200;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-fg-default dark:text-fg-dark-default;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-3 h-3;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-canvas-subtle dark:bg-canvas-dark-subtle;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-emphasis dark:bg-neutral-dark-emphasis rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-emphasisPlus dark:bg-neutral-dark-emphasisPlus;
+  }
+}
+
+@layer components {
+  /* GitHub-style buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-emphasis dark:focus-visible:ring-accent-dark-emphasis;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+  }
+  
+  .btn-primary {
+    @apply bg-success-emphasis dark:bg-success-dark-emphasis text-white;
+    @apply hover:bg-success-fg dark:hover:bg-success-dark-fg;
+    @apply border border-success-emphasis dark:border-success-dark-emphasis;
+    @apply shadow-sm px-4 py-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-canvas-default dark:bg-canvas-dark-default;
+    @apply text-fg-default dark:text-fg-dark-default;
+    @apply border border-border-default dark:border-border-dark-default;
+    @apply hover:bg-canvas-subtle dark:hover:bg-canvas-dark-subtle;
+    @apply shadow-sm px-4 py-2;
+  }
+  
+  .btn-danger {
+    @apply bg-danger-emphasis dark:bg-danger-dark-emphasis text-white;
+    @apply hover:bg-danger-fg dark:hover:bg-danger-dark-fg;
+    @apply border border-danger-emphasis dark:border-danger-dark-emphasis;
+    @apply shadow-sm px-4 py-2;
+  }
+  
+  .btn-ghost {
+    @apply text-fg-muted dark:text-fg-dark-muted;
+    @apply hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted;
+    @apply hover:text-fg-default dark:hover:text-fg-dark-default;
+    @apply px-3 py-2;
+  }
+  
+  /* GitHub-style inputs */
+  .input {
+    @apply w-full rounded-md border border-border-default dark:border-border-dark-default;
+    @apply bg-canvas-default dark:bg-canvas-dark-default;
+    @apply px-3 py-2 text-sm;
+    @apply text-fg-default dark:text-fg-dark-default;
+    @apply placeholder:text-fg-muted dark:placeholder:text-fg-dark-muted;
+    @apply focus:border-accent-emphasis dark:focus:border-accent-dark-emphasis;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent-subtle dark:focus:ring-accent-dark-subtle;
+    @apply transition-colors;
+  }
+  
+  .input-error {
+    @apply border-danger-emphasis dark:border-danger-dark-emphasis;
+    @apply focus:border-danger-emphasis dark:focus:border-danger-dark-emphasis;
+    @apply focus:ring-danger-subtle dark:focus:ring-danger-dark-subtle;
+  }
+  
+  /* GitHub-style cards */
+  .card {
+    @apply bg-canvas-default dark:bg-canvas-dark-default;
+    @apply border border-border-default dark:border-border-dark-default;
+    @apply rounded-lg shadow-sm;
+    @apply p-6;
+  }
+  
+  .card-header {
+    @apply border-b border-border-default dark:border-border-dark-default;
+    @apply pb-4 mb-6;
+  }
+  
+  /* GitHub-style sidebar */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-canvas-subtle dark:bg-canvas-dark-subtle;
+    @apply text-fg-default dark:text-fg-dark-default;
+    @apply font-semibold;
+  }
+  
+  .sidebar-item-inactive {
+    @apply text-fg-muted dark:text-fg-dark-muted;
+    @apply hover:text-fg-default dark:hover:text-fg-dark-default;
+    @apply hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted;
+  }
+  
+  /* GitHub-style alerts */
+  .alert {
+    @apply rounded-md border p-4;
+  }
+  
+  .alert-info {
+    @apply border-accent-muted dark:border-accent-dark-muted;
+    @apply bg-accent-subtle dark:bg-accent-dark-subtle;
+    @apply text-accent-fg dark:text-accent-dark-fg;
+  }
+  
+  .alert-success {
+    @apply border-success-muted dark:border-success-dark-muted;
+    @apply bg-success-subtle dark:bg-success-dark-subtle;
+    @apply text-success-fg dark:text-success-dark-fg;
+  }
+  
+  .alert-warning {
+    @apply border-attention-muted dark:border-attention-dark-muted;
+    @apply bg-attention-subtle dark:bg-attention-dark-subtle;
+    @apply text-attention-fg dark:text-attention-dark-fg;
+  }
+  
+  .alert-error {
+    @apply border-danger-muted dark:border-danger-dark-muted;
+    @apply bg-danger-subtle dark:bg-danger-dark-subtle;
+    @apply text-danger-fg dark:text-danger-dark-fg;
+  }
+  
+  /* GitHub-style badges */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium;
+  }
+  
+  .badge-default {
+    @apply bg-neutral-muted dark:bg-neutral-dark-muted;
+    @apply text-fg-default dark:text-fg-dark-default;
+  }
+  
+  .badge-success {
+    @apply bg-success-subtle dark:bg-success-dark-subtle;
+    @apply text-success-fg dark:text-success-dark-fg;
+  }
+  
+  .badge-warning {
+    @apply bg-attention-subtle dark:bg-attention-dark-subtle;
+    @apply text-attention-fg dark:text-attention-dark-fg;
+  }
+  
+  .badge-error {
+    @apply bg-danger-subtle dark:bg-danger-dark-subtle;
+    @apply text-danger-fg dark:text-danger-dark-fg;
+  }
+  
+  /* GitHub-style progress bars */
+  .progress {
+    @apply w-full bg-neutral-muted dark:bg-neutral-dark-muted rounded-full h-2;
+  }
+  
+  .progress-bar {
+    @apply h-2 rounded-full transition-all duration-300;
+  }
+  
+  .progress-success {
+    @apply bg-success-emphasis dark:bg-success-dark-emphasis;
+  }
+  
+  .progress-warning {
+    @apply bg-attention-emphasis dark:bg-attention-dark-emphasis;
+  }
+  
+  .progress-danger {
+    @apply bg-danger-emphasis dark:bg-danger-dark-emphasis;
+  }
+}
