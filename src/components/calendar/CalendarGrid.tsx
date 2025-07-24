@@ -121,8 +121,10 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           return (
             <div
               key={index}
-              className={`min-h-[120px] p-2 border-r border-b border-gray-100 cursor-pointer transition-all hover:bg-gray-50 ${
-                !isCurrentMonth ? 'bg-canvas-subtle dark:bg-canvas-dark-subtle text-fg-muted dark:text-fg-dark-muted' : ''
+              className={`min-h-[120px] p-2 border-r border-b border-border-default dark:border-border-dark-default cursor-pointer transition-all group ${
+                !isCurrentMonth 
+                  ? 'bg-canvas-subtle dark:bg-canvas-dark-subtle text-fg-muted dark:text-fg-dark-muted hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle' 
+                  : 'bg-canvas-default dark:bg-canvas-dark-default hover:bg-accent-subtle dark:hover:bg-accent-dark-subtle'
               } ${isDayToday ? 'bg-accent-subtle dark:bg-accent-dark-subtle border-accent-emphasis dark:border-accent-dark-emphasis' : ''} ${
                 isSelected ? 'ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : ''
               }`}
