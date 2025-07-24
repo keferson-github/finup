@@ -8,7 +8,6 @@ import { useAuthContext } from '../../contexts/AuthContext'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 
 const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Senha atual é obrigatória'),
   newPassword: z.string().min(6, 'Nova senha deve ter pelo menos 6 caracteres'),
   confirmPassword: z.string().min(1, 'Confirmação é obrigatória')
 }).refine((data) => data.newPassword === data.confirmPassword, {
@@ -30,8 +29,8 @@ type DeleteAccountFormData = z.infer<typeof deleteAccountSchema>
 export const SecuritySettings: React.FC = () => {
   const { changePassword, deleteAccount } = useSettings()
   const { signOut } = useAuthContext()
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [showDeleteForm, setShowDeleteForm] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
@@ -48,7 +47,8 @@ export const SecuritySettings: React.FC = () => {
     setIsChangingPassword(true)
     
     try {
-      const result = await changePassword(data.currentPassword, data.newPassword)
+      // Chamada simplificada sem senha atual
+      const result = await changePassword('', data.newPassword)
       if (result.success) {
         passwordForm.reset()
       }
@@ -92,32 +92,6 @@ export const SecuritySettings: React.FC = () => {
         <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-              Senha Atual *
-            </label>
-            <div className="relative">
-              <input
-                type={showCurrentPassword ? 'text' : 'password'}
-                {...passwordForm.register('currentPassword')}
-                className="input pr-12"
-                placeholder="Digite sua senha atual"
-              />
-              <button
-                type="button"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-4 top-5 pb-1 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
-              >
-                {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-            {passwordForm.formState.errors.currentPassword && (
-              <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
-                {passwordForm.formState.errors.currentPassword.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
               Nova Senha *
             </label>
             <div className="relative">
@@ -146,12 +120,21 @@ export const SecuritySettings: React.FC = () => {
             <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
               Confirmar Nova Senha *
             </label>
-            <input
-              type="password"
-              {...passwordForm.register('confirmPassword')}
-              className="input"
-              placeholder="Confirme sua nova senha"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                {...passwordForm.register('confirmPassword')}
+                className="input pr-12"
+                placeholder="Confirme sua nova senha"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-5 pb-1 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
+              >
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
             {passwordForm.formState.errors.confirmPassword && (
               <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
                 {passwordForm.formState.errors.confirmPassword.message}

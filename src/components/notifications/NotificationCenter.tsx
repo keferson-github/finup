@@ -32,15 +32,15 @@ export const NotificationCenter: React.FC = () => {
   const getNotificationColor = (type: string) => {
     switch (type) {
       case 'budget_alert':
-        return 'border-amber-200 bg-amber-50'
+        return 'border-attention-emphasis dark:border-attention-dark-emphasis bg-attention-subtle dark:bg-attention-dark-subtle'
       case 'overdue_transaction':
-        return 'border-red-200 bg-red-50'
+        return 'border-danger-emphasis dark:border-danger-dark-emphasis bg-danger-subtle dark:bg-danger-dark-subtle'
       case 'recurring_reminder':
-        return 'border-blue-200 bg-blue-50'
+        return 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
       case 'goal_achieved':
-        return 'border-emerald-200 bg-emerald-50'
+        return 'border-success-emphasis dark:border-success-dark-emphasis bg-success-subtle dark:bg-success-dark-subtle'
       default:
-        return 'border-gray-200 bg-gray-50'
+        return 'border-neutral-emphasis dark:border-neutral-dark-emphasis bg-neutral-subtle dark:bg-neutral-dark-subtle'
     }
   }
 

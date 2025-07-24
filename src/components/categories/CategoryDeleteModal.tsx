@@ -73,18 +73,20 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-border-default dark:border-border-dark-default">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Excluir Categoria</h2>
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[85vh] border border-border-default dark:border-border-dark-default flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
+          <h2 className="text-xl font-bold text-fg-default dark:text-fg-dark-default">Excluir Categoria</h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
           </button>
         </div>
 
-        <div className="p-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center mb-4">
             <div 
               className="w-12 h-12 rounded-lg flex items-center justify-center text-xl mr-4"
@@ -93,8 +95,8 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
               {category.icone || '📁'}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">{category.nome || 'Categoria sem nome'}</h3>
-              <p className="text-sm text-gray-500 capitalize">{category.tipo || 'tipo não definido'}</p>
+              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default">{category.nome || 'Categoria sem nome'}</h3>
+              <p className="text-sm text-fg-muted dark:text-fg-dark-muted capitalize">{category.tipo || 'tipo não definido'}</p>
             </div>
           </div>
 
@@ -116,13 +118,13 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
 
               {availableCategories.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
                     Transferir transações para:
                   </label>
                   <select
                     value={replacementCategoryId}
                     onChange={(e) => setReplacementCategoryId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="input"
                   >
                     <option value="">Selecione uma categoria</option>
                     {availableCategories.map((cat) => (
@@ -147,8 +149,8 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
                 </div>
               )}
 
-              <div className="text-sm text-gray-600">
-                <p className="font-medium mb-1">Opções disponíveis:</p>
+              <div className="text-sm text-fg-muted dark:text-fg-dark-muted">
+                <p className="font-medium mb-1 text-fg-default dark:text-fg-dark-default">Opções disponíveis:</p>
                 <ul className="list-disc list-inside space-y-1 text-xs">
                   {availableCategories.length > 0 && (
                     <li>Transferir para outra categoria (recomendado)</li>
@@ -174,17 +176,18 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
           )}
         </div>
 
-        <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200">
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-end space-x-4 p-6 border-t border-border-default dark:border-border-dark-default flex-shrink-0">
           <button
             onClick={handleClose}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="btn btn-secondary"
           >
             Cancelar
           </button>
           <button
             onClick={handleDelete}
             disabled={isDeleting || (hasTransactions && availableCategories.length > 0 && !replacementCategoryId)}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="btn btn-danger disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             {isDeleting && <LoadingSpinner size="sm" className="mr-2" />}
             {hasTransactions 

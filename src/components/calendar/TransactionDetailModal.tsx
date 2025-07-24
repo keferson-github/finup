@@ -87,18 +87,20 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Detalhes da Transação</h2>
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[85vh] border border-border-default dark:border-border-dark-default flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
+          <h2 className="text-xl font-bold text-fg-default dark:text-fg-dark-default">Detalhes da Transação</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Título e Valor */}
           <div className="text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -201,27 +203,28 @@ export const TransactionDetailModal: React.FC<TransactionDetailModalProps> = ({
             )}
           </div>
 
-          {/* Ações */}
-          <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Fechar
-            </button>
-            <button
-              onClick={handleStatusToggle}
-              disabled={isUpdating}
-              className={`px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center ${
-                transaction.status === 'pago'
-                  ? 'bg-amber-600 text-white hover:bg-amber-700'
-                  : 'bg-emerald-600 text-white hover:bg-emerald-700'
-              }`}
-            >
-              {isUpdating && <LoadingSpinner size="sm" className="mr-2" />}
-              {transaction.status === 'pago' ? 'Marcar como Pendente' : 'Marcar como Pago'}
-            </button>
-          </div>
+        </div>
+
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-end space-x-4 p-6 border-t border-border-default dark:border-border-dark-default flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-border-default dark:border-border-dark-default text-fg-default dark:text-fg-dark-default rounded-lg hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors"
+          >
+            Fechar
+          </button>
+          <button
+            onClick={handleStatusToggle}
+            disabled={isUpdating}
+            className={`px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center ${
+              transaction.status === 'pago'
+                ? 'bg-amber-600 text-white hover:bg-amber-700'
+                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+            }`}
+          >
+            {isUpdating && <LoadingSpinner size="sm" className="mr-2" />}
+            {transaction.status === 'pago' ? 'Marcar como Pendente' : 'Marcar como Pago'}
+          </button>
         </div>
       </div>
     </div>

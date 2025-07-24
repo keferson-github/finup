@@ -303,7 +303,7 @@ export const useDashboard = () => {
         `)
         .eq('user_id', user.id)
         .order('criado_em', { ascending: false })
-        .limit(10)
+        .limit(20)
 
       const formattedTransactions: RecentTransaction[] = data?.map(t => ({
         id: t.id,

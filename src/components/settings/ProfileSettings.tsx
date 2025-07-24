@@ -6,8 +6,7 @@ import { User, Mail, Camera, Save } from 'lucide-react'
 import { useSettings } from '../../hooks/useSettings'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 import { SecuritySettings } from './SecuritySettings'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+
 
 const profileSchema = z.object({
   nome_completo: z.string().min(1, 'Nome é obrigatório'),

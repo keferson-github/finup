@@ -60,18 +60,20 @@ export const DataImportModal: React.FC<DataImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Importar Transações</h2>
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-3xl max-h-[85vh] border border-border-default dark:border-border-dark-default flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
+          <h2 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">Importar Transações</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
           </button>
         </div>
 
-        <div className="p-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
           {!importResult ? (
             <div className="space-y-6">
               {/* Instructions */}

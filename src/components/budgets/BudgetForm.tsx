@@ -135,8 +135,9 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-border-default dark:border-border-dark-default">
-        <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-3xl max-h-[85vh] border border-border-default dark:border-border-dark-default flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
           <h2 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">
             {mode === 'create' ? 'Novo Orçamento' : 'Editar Orçamento'}
           </h2>
@@ -148,7 +149,9 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+        {/* Scrollable Form Content */}
+        <div className="flex-1 overflow-y-auto">
+          <form id="budget-form" onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 pb-0">
           {/* Nome e Valor */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -334,24 +337,28 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
           </div>
 
           {/* Botões */}
-          <div className="flex items-center justify-end space-x-4 pt-6 border-t border-border-default dark:border-border-dark-default">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="btn btn-secondary"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            >
-              {isSubmitting && <LoadingSpinner size="sm" className="mr-2" />}
-              {mode === 'create' ? 'Criar Orçamento' : 'Atualizar Orçamento'}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
+
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-end space-x-4 p-6 border-t border-border-default dark:border-border-dark-default flex-shrink-0">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="btn btn-secondary"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            form="budget-form"
+            disabled={isSubmitting}
+            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          >
+            {isSubmitting && <LoadingSpinner size="sm" className="mr-2" />}
+            {mode === 'create' ? 'Criar Orçamento' : 'Atualizar Orçamento'}
+          </button>
+        </div>
       </div>
     </div>
   )
