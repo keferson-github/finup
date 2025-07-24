@@ -104,7 +104,7 @@ export const SecuritySettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
+                className="absolute right-4 top-5 pb-1 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
               >
                 {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -130,7 +130,7 @@ export const SecuritySettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
+                className="absolute right-4 top-5 pb-1 transform -translate-y-1/2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default"
               >
                 {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>

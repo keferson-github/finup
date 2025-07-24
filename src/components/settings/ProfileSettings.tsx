@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Mail, Calendar, Camera, Save } from 'lucide-react'
+import { User, Mail, Camera, Save } from 'lucide-react'
 import { useSettings } from '../../hooks/useSettings'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import { SecuritySettings } from './SecuritySettings'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -167,21 +168,7 @@ export const ProfileSettings: React.FC = () => {
             </p>
           </div>
 
-          {/* Data de Criação */}
-          <div>
-            <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-              Membro desde
-            </label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
-              <input
-                type="text"
-                value={format(new Date(profile.criado_em), "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                disabled
-                className="input pl-10 bg-canvas-subtle dark:bg-canvas-dark-subtle text-fg-muted dark:text-fg-dark-muted cursor-not-allowed"
-              />
-            </div>
-          </div>
+
 
           {/* Botão de Salvar */}
           <div className="flex justify-end">
@@ -196,6 +183,11 @@ export const ProfileSettings: React.FC = () => {
             </button>
           </div>
         </form>
+        
+        {/* Configurações de Segurança */}
+        <div className="mt-8 pt-8 border-t border-border-default dark:border-border-dark-default">
+          <SecuritySettings />
+        </div>
       </div>
 
       {/* Estatísticas da Conta */}

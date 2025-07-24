@@ -77,7 +77,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default transition-colors"
+                className="absolute right-4 top-4 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default transition-colors"
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
