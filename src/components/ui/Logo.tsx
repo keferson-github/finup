@@ -1,5 +1,4 @@
 import React from 'react'
-import { TrendingUp } from 'lucide-react'
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg'
@@ -28,12 +27,14 @@ export const Logo: React.FC<LogoProps> = ({
     <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
         {/* Logo Background */}
-        <div className={`${sizeClasses[size]} bg-gradient-to-br from-success-emphasis to-accent-emphasis dark:from-success-dark-emphasis dark:to-accent-dark-emphasis rounded-lg flex items-center justify-center shadow-md`}>
-          <TrendingUp className={`${size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-6 w-6'} text-white`} />
+        <div className={`${sizeClasses[size]} rounded-lg flex items-center justify-center shadow-lg overflow-hidden`}>
+          <img 
+            src="/images/logo-finup.png" 
+            alt="FinUp Logo" 
+            className="w-full h-full object-contain p-1"
+          />
         </div>
-        
-        {/* Subtle glow effect */}
-        <div className={`absolute inset-0 ${sizeClasses[size]} bg-gradient-to-br from-success-emphasis to-accent-emphasis dark:from-success-dark-emphasis dark:to-accent-dark-emphasis rounded-lg opacity-20 blur-sm -z-10`} />
+
       </div>
       
       {showText && (
