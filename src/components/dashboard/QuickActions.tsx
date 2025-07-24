@@ -1,18 +1,16 @@
 import React from 'react'
-import { Plus, TrendingUp, TrendingDown, CreditCard, BarChart3, Target } from 'lucide-react'
+import { TrendingUp, TrendingDown, CreditCard, BarChart3 } from 'lucide-react'
 
 interface QuickActionsProps {
   onAddTransaction?: () => void
   onAddAccount?: () => void
   onViewReports?: () => void
-  onViewBudgets?: () => void
 }
 
 export const QuickActions: React.FC<QuickActionsProps> = ({
   onAddTransaction,
   onAddAccount,
-  onViewReports,
-  onViewBudgets
+  onViewReports
 }) => {
   return (
     <div className="card">
@@ -21,7 +19,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <button 
-          onClick={onAddTransaction}
+          onClick={onAddTransaction || (() => {})}
           className="p-4 bg-success-subtle dark:bg-success-dark-subtle text-success-fg dark:text-success-dark-fg rounded-lg hover:bg-success-muted dark:hover:bg-success-dark-muted transition-colors text-center group"
         >
           <TrendingUp className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />
@@ -29,7 +27,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
         
         <button 
-          onClick={onAddTransaction}
+          onClick={onAddTransaction || (() => {})}
           className="p-4 bg-danger-subtle dark:bg-danger-dark-subtle text-danger-fg dark:text-danger-dark-fg rounded-lg hover:bg-danger-muted dark:hover:bg-danger-dark-muted transition-colors text-center group"
         >
           <TrendingDown className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />
@@ -37,7 +35,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
         
         <button 
-          onClick={onAddAccount}
+          onClick={onAddAccount || (() => {})}
           className="p-4 bg-accent-subtle dark:bg-accent-dark-subtle text-accent-fg dark:text-accent-dark-fg rounded-lg hover:bg-accent-muted dark:hover:bg-accent-dark-muted transition-colors text-center group"
         >
           <CreditCard className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />
@@ -45,7 +43,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         </button>
         
         <button 
-          onClick={onViewReports}
+          onClick={onViewReports || (() => {})}
           className="p-4 bg-attention-subtle dark:bg-attention-dark-subtle text-attention-fg dark:text-attention-dark-fg rounded-lg hover:bg-attention-muted dark:hover:bg-attention-dark-muted transition-colors text-center group"
         >
           <BarChart3 className="h-6 w-6 mx-auto mb-2 group-hover:scale-110 transition-transform" />

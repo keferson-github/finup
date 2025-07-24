@@ -64,6 +64,7 @@ export interface UpcomingTransaction {
   } | null
   account: {
     nome: string
+    cor: string
   }
 }
 
@@ -242,18 +243,19 @@ export const useDashboard = () => {
       }>()
 
       transactions?.forEach(transaction => {
-        if (!transaction.categories) return
+        if (!transaction.categories || !Array.isArray(transaction.categories) || transaction.categories.length === 0) return
 
-        const key = `${transaction.categories.nome}-${transaction.tipo}`
+        const category = transaction.categories[0]
+        const key = `${category.nome}-${transaction.tipo}`
         const existing = categoryMap.get(key)
 
         if (existing) {
           existing.total += Number(transaction.valor)
         } else {
           categoryMap.set(key, {
-            nome: transaction.categories.nome,
-            cor: transaction.categories.cor,
-            icone: transaction.categories.icone,
+            nome: category.nome,
+            cor: category.cor,
+            icone: category.icone,
             total: Number(transaction.valor),
             tipo: transaction.tipo
           })
@@ -305,19 +307,19 @@ export const useDashboard = () => {
 
       const formattedTransactions: RecentTransaction[] = data?.map(t => ({
         id: t.id,
-        titulo: t.titulo,
-        valor: Number(t.valor),
+        titulo: t.titulo || 'Transação sem título',
+        valor: Number(t.valor) || 0,
         tipo: t.tipo,
         status: t.status,
         data: t.data,
-        category: t.categories ? {
-          nome: t.categories.nome,
-          cor: t.categories.cor,
-          icone: t.categories.icone
+        category: (t.categories && Array.isArray(t.categories) && t.categories.length > 0) ? {
+          nome: t.categories[0].nome,
+          cor: t.categories[0].cor,
+          icone: t.categories[0].icone
         } : null,
         account: {
-          nome: t.accounts.nome,
-          cor: t.accounts.cor
+          nome: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].nome : 'Conta não informada',
+          cor: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].cor : '#6B7280'
         }
       })) || []
 
@@ -345,7 +347,7 @@ export const useDashboard = () => {
           tipo,
           data,
           categories(nome, cor, icone),
-          accounts!inner(nome)
+          accounts!inner(nome, cor)
         `)
         .eq('user_id', user.id)
         .eq('status', 'pendente')
@@ -356,17 +358,18 @@ export const useDashboard = () => {
 
       const formattedTransactions: UpcomingTransaction[] = data?.map(t => ({
         id: t.id,
-        titulo: t.titulo,
-        valor: Number(t.valor),
+        titulo: t.titulo || 'Transação sem título',
+        valor: Number(t.valor) || 0,
         tipo: t.tipo,
         data: t.data,
-        category: t.categories ? {
-          nome: t.categories.nome,
-          cor: t.categories.cor,
-          icone: t.categories.icone
+        category: (t.categories && Array.isArray(t.categories) && t.categories.length > 0) ? {
+          nome: t.categories[0].nome,
+          cor: t.categories[0].cor,
+          icone: t.categories[0].icone
         } : null,
         account: {
-          nome: t.accounts.nome
+          nome: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].nome : 'Conta não informada',
+          cor: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].cor : '#6B7280'
         }
       })) || []
 
@@ -399,6 +402,8 @@ export const useDashboard = () => {
       const budgetStatusData: BudgetStatus[] = []
 
       for (const budget of budgets) {
+        if (!budget || !budget.id) continue
+        
         // Calcular gasto atual do orçamento
         let query = supabase
           .from('transactions')
@@ -406,36 +411,37 @@ export const useDashboard = () => {
           .eq('user_id', user.id)
           .eq('tipo', 'despesa')
           .eq('status', 'pago')
-          .gte('data', budget.data_inicio)
+          .gte('data', budget.data_inicio || format(new Date(), 'yyyy-MM-dd'))
 
         if (budget.data_fim) {
           query = query.lte('data', budget.data_fim)
         }
 
-        if (budget.category_ids && budget.category_ids.length > 0) {
+        if (budget.category_ids && Array.isArray(budget.category_ids) && budget.category_ids.length > 0) {
           query = query.in('category_id', budget.category_ids)
         }
 
-        if (budget.account_ids && budget.account_ids.length > 0) {
+        if (budget.account_ids && Array.isArray(budget.account_ids) && budget.account_ids.length > 0) {
           query = query.in('account_id', budget.account_ids)
         }
 
         const { data: transactions } = await query
 
-        const valorGasto = transactions?.reduce((sum, t) => sum + Number(t.valor), 0) || 0
-        const progressoPercentual = budget.valor_limite > 0 
-          ? Math.min((valorGasto / budget.valor_limite) * 100, 100)
+        const valorGasto = transactions?.reduce((sum, t) => sum + (Number(t.valor) || 0), 0) || 0
+        const valorLimite = Number(budget.valor_limite) || 0
+        const progressoPercentual = valorLimite > 0 
+          ? Math.min((valorGasto / valorLimite) * 100, 100)
           : 0
 
         let status: 'ok' | 'alerta' | 'ultrapassado' = 'ok'
-        if (valorGasto > budget.valor_limite) {
+        if (valorGasto > valorLimite) {
           status = 'ultrapassado'
-        } else if (progressoPercentual >= budget.percentual_alerta) {
+        } else if (progressoPercentual >= (Number(budget.percentual_alerta) || 80)) {
           status = 'alerta'
         }
 
         // Buscar categoria principal se houver
-        let categoriaPrincipal = null
+        let categoriaPrincipal: { nome: string; cor: string; icone: string } | undefined = undefined
         if (budget.category_ids && budget.category_ids.length > 0) {
           const { data: categoryData } = await supabase
             .from('categories')
@@ -444,14 +450,18 @@ export const useDashboard = () => {
             .single()
           
           if (categoryData) {
-            categoriaPrincipal = categoryData
+            categoriaPrincipal = {
+              nome: categoryData.nome || 'Categoria sem nome',
+              cor: categoryData.cor || '#6B7280',
+              icone: categoryData.icone || '📊'
+            }
           }
         }
 
         budgetStatusData.push({
           id: budget.id,
-          nome: budget.nome,
-          valor_limite: budget.valor_limite,
+          nome: budget.nome || 'Orçamento sem nome',
+          valor_limite: Number(budget.valor_limite) || 0,
           valor_gasto: valorGasto,
           progresso_percentual: progressoPercentual,
           status,

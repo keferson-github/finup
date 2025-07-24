@@ -37,9 +37,7 @@ export const Dashboard: React.FC = () => {
     navigate('/reports')
   }
 
-  const handleViewBudgets = () => {
-    navigate('/budgets')
-  }
+
 
   if (loading) {
     return (
@@ -67,8 +65,8 @@ export const Dashboard: React.FC = () => {
         <CategoryChart data={categorySummary} loading={loading} />
       </div>
 
-      {/* Seção Inferior */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Seção de Transações */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         {/* Transações Recentes */}
         <div className="lg:col-span-2">
           <RecentTransactions 
@@ -78,22 +76,23 @@ export const Dashboard: React.FC = () => {
           />
         </div>
 
-        {/* Sidebar Direita */}
-        <div className="space-y-6">
-          {/* Próximas Transações */}
+        {/* Próximas Transações */}
+        <div>
           <UpcomingTransactions data={upcomingTransactions} loading={loading} />
-          
-          {/* Status dos Orçamentos */}
-          <BudgetStatus data={budgetStatus} loading={loading} />
-          
-          {/* Ações Rápidas */}
-          <QuickActions
-            onAddTransaction={handleAddTransaction}
-            onAddAccount={handleAddAccount}
-            onViewReports={handleViewReports}
-            onViewBudgets={handleViewBudgets}
-          />
         </div>
+      </div>
+
+      {/* Status dos Orçamentos e Ações Rápidas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Status dos Orçamentos */}
+        <BudgetStatus data={budgetStatus} loading={loading} />
+        
+        {/* Ações Rápidas */}
+        <QuickActions
+          onAddTransaction={handleAddTransaction}
+          onAddAccount={handleAddAccount}
+          onViewReports={handleViewReports}
+        />
       </div>
       
       {/* Modal de Transação */}

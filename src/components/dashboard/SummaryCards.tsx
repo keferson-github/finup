@@ -1,7 +1,6 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, DollarSign, CreditCard } from 'lucide-react'
 import { DashboardSummary } from '../../hooks/useDashboard'
-import { LoadingSpinner } from '../ui/LoadingSpinner'
 
 interface SummaryCardsProps {
   data: DashboardSummary | null
@@ -9,20 +8,23 @@ interface SummaryCardsProps {
 }
 
 export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => {
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined | null) => {
+    const validAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 0
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(amount)
+    }).format(validAmount)
   }
 
-  const formatPercentage = (percentage: number) => {
-    const sign = percentage >= 0 ? '+' : ''
-    return `${sign}${percentage.toFixed(1)}%`
+  const formatPercentage = (percentage: number | undefined | null) => {
+    const validPercentage = typeof percentage === 'number' && !isNaN(percentage) ? percentage : 0
+    const sign = validPercentage >= 0 ? '+' : ''
+    return `${sign}${validPercentage.toFixed(1)}%`
   }
 
-  const getPercentageColor = (percentage: number) => {
-    return percentage >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+  const getPercentageColor = (percentage: number | undefined | null) => {
+    const validPercentage = typeof percentage === 'number' && !isNaN(percentage) ? percentage : 0
+    return validPercentage >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
   }
 
   if (loading) {
@@ -63,7 +65,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
           <div>
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Saldo Total</p>
             <p className="text-3xl font-bold text-fg-default dark:text-fg-dark-default mt-2">
-              {formatCurrency(data.saldoConsolidado)}
+              {formatCurrency(data?.saldoConsolidado)}
             </p>
             <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1">
               Todas as contas
@@ -81,10 +83,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
           <div>
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Receitas do Mês</p>
             <p className="text-3xl font-bold text-success-fg dark:text-success-dark-fg mt-2">
-              {formatCurrency(data.totalReceitas)}
+              {formatCurrency(data?.totalReceitas)}
             </p>
-            <p className={`text-xs mt-1 ${getPercentageColor(data.comparativoComMesAnterior.receitas)}`}>
-              {formatPercentage(data.comparativoComMesAnterior.receitas)} vs mês anterior
+            <p className={`text-xs mt-1 ${getPercentageColor(data?.comparativoComMesAnterior?.receitas)}`}>
+              {formatPercentage(data?.comparativoComMesAnterior?.receitas)} vs mês anterior
             </p>
           </div>
           <div className="w-12 h-12 bg-success-subtle dark:bg-success-dark-subtle rounded-lg flex items-center justify-center">
@@ -99,10 +101,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
           <div>
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Despesas do Mês</p>
             <p className="text-3xl font-bold text-danger-fg dark:text-danger-dark-fg mt-2">
-              {formatCurrency(data.totalDespesas)}
+              {formatCurrency(data?.totalDespesas)}
             </p>
-            <p className={`text-xs mt-1 ${getPercentageColor(data.comparativoComMesAnterior.despesas)}`}>
-              {formatPercentage(data.comparativoComMesAnterior.despesas)} vs mês anterior
+            <p className={`text-xs mt-1 ${getPercentageColor(data?.comparativoComMesAnterior?.despesas)}`}>
+              {formatPercentage(data?.comparativoComMesAnterior?.despesas)} vs mês anterior
             </p>
           </div>
           <div className="w-12 h-12 bg-danger-subtle dark:bg-danger-dark-subtle rounded-lg flex items-center justify-center">
@@ -117,19 +119,19 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
           <div>
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Saldo do Mês</p>
             <p className={`text-3xl font-bold mt-2 ${
-              data.saldoMesAtual >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+              (data?.saldoMesAtual || 0) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
             }`}>
-              {formatCurrency(data.saldoMesAtual)}
+              {formatCurrency(data?.saldoMesAtual)}
             </p>
-            <p className={`text-xs mt-1 ${getPercentageColor(data.comparativoComMesAnterior.saldo)}`}>
-              {formatPercentage(data.comparativoComMesAnterior.saldo)} vs mês anterior
+            <p className={`text-xs mt-1 ${getPercentageColor(data?.comparativoComMesAnterior?.saldo)}`}>
+              {formatPercentage(data?.comparativoComMesAnterior?.saldo)} vs mês anterior
             </p>
           </div>
           <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-            data.saldoMesAtual >= 0 ? 'bg-success-subtle dark:bg-success-dark-subtle' : 'bg-danger-subtle dark:bg-danger-dark-subtle'
+            (data?.saldoMesAtual || 0) >= 0 ? 'bg-success-subtle dark:bg-success-dark-subtle' : 'bg-danger-subtle dark:bg-danger-dark-subtle'
           }`}>
             <CreditCard className={`h-6 w-6 ${
-              data.saldoMesAtual >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+              (data?.saldoMesAtual || 0) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
             }`} />
           </div>
         </div>

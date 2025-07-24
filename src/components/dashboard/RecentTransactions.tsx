@@ -15,11 +15,12 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   loading, 
   onAddTransaction 
 }) => {
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined | null) => {
+    const validAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 0
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(amount)
+    }).format(validAmount)
   }
 
   const getStatusIcon = (status: string) => {
@@ -35,23 +36,12 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     }
   }
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pago':
-        return 'Pago'
-      case 'pendente':
-        return 'Pendente'
-      case 'vencido':
-        return 'Vencido'
-      default:
-        return status
-    }
-  }
+
 
   if (loading) {
     return (
       <div className="card p-0">
-        <div className="card-header">
+        <div className="px-6 pt-6 pb-4">
           <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Transações Recentes</h3>
         </div>
         <div className="p-6">
@@ -79,7 +69,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
   return (
     <div className="card p-0">
-      <div className="card-header">
+      <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Transações Recentes</h3>
           <button className="text-accent-fg dark:text-accent-dark-fg hover:text-accent-emphasis dark:hover:text-accent-dark-emphasis text-sm font-medium transition-colors">
@@ -88,7 +78,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
         </div>
       </div>
       <div className="p-6">
-        {data.length === 0 ? (
+        {!data || data.length === 0 ? (
           <div className="text-center py-8">
             <CreditCard className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
             <p className="text-fg-muted dark:text-fg-dark-muted mb-4">Nenhuma transação recente</p>
@@ -104,7 +94,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
           </div>
         ) : (
           <div className="space-y-4">
-            {data.map((transaction) => (
+            {data.filter(transaction => transaction && transaction.id).map((transaction) => (
               <div key={transaction.id} className="flex items-center justify-between p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted transition-colors">
                 <div className="flex items-center">
                   <div 
@@ -116,19 +106,19 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                     ) : (
                       <div 
                         className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: transaction.account.cor }}
+                        style={{ backgroundColor: transaction.account?.cor || '#6B7280' }}
                       />
                     )}
                   </div>
                   <div>
                     <div className="flex items-center">
                       <p className="font-medium text-fg-default dark:text-fg-dark-default mr-2">
-                        {transaction.titulo}
+                        {transaction.titulo || 'Transação sem título'}
                       </p>
-                      {getStatusIcon(transaction.status)}
+                      {getStatusIcon(transaction.status || 'pendente')}
                     </div>
                     <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                      {transaction.category?.nome || 'Sem categoria'} • {transaction.account.nome}
+                      {transaction.category?.nome || 'Sem categoria'} • {transaction.account?.nome || 'Conta não informada'}
                     </p>
                   </div>
                 </div>
@@ -142,7 +132,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                     {formatCurrency(transaction.valor)}
                   </p>
                   <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                    {format(new Date(transaction.data), 'd MMM', { locale: ptBR })}
+                    {transaction.data ? format(new Date(transaction.data), 'd MMM', { locale: ptBR }) : 'Data não informada'}
                   </p>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { CategoryReport } from '../../hooks/useReports'
 import { Tag } from 'lucide-react'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
@@ -17,27 +17,30 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
   viewType, 
   onViewTypeChange 
 }) => {
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | undefined | null) => {
+    const validValue = typeof value === 'number' && !isNaN(value) ? value : 0
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
-    }).format(value)
+    }).format(validValue)
   }
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = payload[0]?.payload
+      if (!data) return null
+      
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <div className="flex items-center mb-2">
-            <span className="text-lg mr-2">{data.icone}</span>
-            <span className="font-medium">{data.categoria}</span>
+            <span className="text-lg mr-2">{data.icone || '📁'}</span>
+            <span className="font-medium">{data.categoria || 'Categoria sem nome'}</span>
           </div>
           <p className="text-sm text-gray-600">
             Valor: {formatCurrency(data.total)}
           </p>
           <p className="text-sm text-gray-600">
-            Porcentagem: {data.porcentagem.toFixed(1)}%
+            Porcentagem: {(data.porcentagem || 0).toFixed(1)}%
           </p>
         </div>
       )
@@ -58,7 +61,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
     )
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="card">
         <div className="flex items-center justify-between mb-6">
@@ -117,10 +120,10 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="total"
-                    label={({ porcentagem }) => `${porcentagem.toFixed(1)}%`}
+                    label={({ porcentagem }) => `${(porcentagem || 0).toFixed(1)}%`}
                   >
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.cor} />
+                      <Cell key={`cell-${index}`} fill={entry?.cor || '#6B7280'} />
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
@@ -145,35 +148,35 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
 
         {/* Lista de Categorias */}
         <div className="space-y-3 max-h-80 overflow-y-auto">
-          {data.map((category, index) => (
+          {data.filter(category => category && category.categoria).map((category, index) => (
             <div key={index} className="flex items-center justify-between p-3 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg">
               <div className="flex items-center">
                 <div 
                   className="w-4 h-4 rounded-full mr-3"
-                  style={{ backgroundColor: category.cor }}
+                  style={{ backgroundColor: category?.cor || '#6B7280' }}
                 />
                 <div>
                   <div className="flex items-center">
-                    <span className="text-sm mr-2">{category.icone}</span>
+                    <span className="text-sm mr-2">{category?.icone || '📁'}</span>
                     <span className="font-medium text-fg-default dark:text-fg-dark-default text-sm">
-                      {category.categoria}
+                      {category?.categoria || 'Categoria sem nome'}
                     </span>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full ${
-                    category.tipo === 'receita' 
+                    category?.tipo === 'receita' 
                       ? 'bg-success-subtle dark:bg-success-dark-subtle text-success-fg dark:text-success-dark-fg'
                       : 'bg-danger-subtle dark:bg-danger-dark-subtle text-danger-fg dark:text-danger-dark-fg'
                   }`}>
-                    {category.tipo}
+                    {category?.tipo || 'tipo não definido'}
                   </span>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-semibold text-fg-default dark:text-fg-dark-default text-sm">
-                  {formatCurrency(category.total)}
+                  {formatCurrency(category?.total)}
                 </p>
                 <p className="text-xs text-fg-muted dark:text-fg-dark-muted">
-                  {category.porcentagem.toFixed(1)}%
+                  {(category?.porcentagem || 0).toFixed(1)}%
                 </p>
               </div>
             </div>

@@ -88,13 +88,13 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
           <div className="flex items-center mb-4">
             <div 
               className="w-12 h-12 rounded-lg flex items-center justify-center text-xl mr-4"
-              style={{ backgroundColor: `${category.cor}20` }}
+              style={{ backgroundColor: `${category.cor || '#6B7280'}20` }}
             >
-              {category.icone}
+              {category.icone || '📁'}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">{category.nome}</h3>
-              <p className="text-sm text-gray-500 capitalize">{category.tipo}</p>
+              <h3 className="font-semibold text-gray-900">{category.nome || 'Categoria sem nome'}</h3>
+              <p className="text-sm text-gray-500 capitalize">{category.tipo || 'tipo não definido'}</p>
             </div>
           </div>
 
@@ -127,7 +127,7 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
                     <option value="">Selecione uma categoria</option>
                     {availableCategories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
-                        {cat.icone} {cat.nome}
+                        {cat.icone || '📁'} {cat.nome || 'Categoria sem nome'}
                       </option>
                     ))}
                   </select>
@@ -135,11 +135,11 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
                   {replacementCategoryId && (
                     <div className="mt-2 p-2 bg-blue-50 rounded-lg">
                       <div className="flex items-center text-sm text-blue-800">
-                        <span className="mr-2">{category.icone} {category.nome}</span>
+                        <span className="mr-2">{category.icone || '📁'} {category.nome || 'Categoria sem nome'}</span>
                         <ArrowRight className="h-4 w-4 mx-2" />
                         <span>
-                          {availableCategories.find(cat => cat.id === replacementCategoryId)?.icone}{' '}
-                          {availableCategories.find(cat => cat.id === replacementCategoryId)?.nome}
+                          {availableCategories.find(cat => cat.id === replacementCategoryId)?.icone || '📁'}{' '}
+                          {availableCategories.find(cat => cat.id === replacementCategoryId)?.nome || 'Categoria não encontrada'}
                         </span>
                       </div>
                     </div>
