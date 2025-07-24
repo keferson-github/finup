@@ -1,19 +1,21 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuthContext } from './contexts/AuthContext'
 import { Layout } from './components/layout/Layout'
-import { AuthPage } from './pages/AuthPage'
-import { Dashboard } from './pages/Dashboard'
-import { Transactions } from './pages/Transactions'
-import { Accounts } from './pages/Accounts'
-import { Categories } from './pages/Categories'
-import { Reports } from './pages/Reports'
-import { Calendar } from './pages/Calendar'
-import { Budgets } from './pages/Budgets'
-import { Settings } from './pages/Settings'
 import { LoadingSpinner } from './components/ui/LoadingSpinner'
+
+// Lazy loading das páginas para code splitting
+const AuthPage = React.lazy(() => import('./pages/AuthPage').then(module => ({ default: module.AuthPage })))
+const Dashboard = React.lazy(() => import('./pages/Dashboard').then(module => ({ default: module.Dashboard })))
+const Transactions = React.lazy(() => import('./pages/Transactions').then(module => ({ default: module.Transactions })))
+const Accounts = React.lazy(() => import('./pages/Accounts').then(module => ({ default: module.Accounts })))
+const Categories = React.lazy(() => import('./pages/Categories').then(module => ({ default: module.Categories })))
+const Reports = React.lazy(() => import('./pages/Reports').then(module => ({ default: module.Reports })))
+const Calendar = React.lazy(() => import('./pages/Calendar').then(module => ({ default: module.Calendar })))
+const Budgets = React.lazy(() => import('./pages/Budgets').then(module => ({ default: module.Budgets })))
+const Settings = React.lazy(() => import('./pages/Settings').then(module => ({ default: module.Settings })))
 
 const AppRoutes: React.FC = () => {
   const { user, loading } = useAuthContext()
@@ -27,29 +29,41 @@ const AppRoutes: React.FC = () => {
   }
 
   return (
-    <Routes>
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="/*" element={
-        user ? (
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/accounts" element={<Accounts />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/budgets" element={<Budgets />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Layout>
-        ) : (
-          <Navigate to="/auth" replace />
-        )
-      } />
-    </Routes>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    }>
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/*" element={
+          user ? (
+            <Layout>
+              <Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <LoadingSpinner size="md" />
+                </div>
+              }>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/transactions" element={<Transactions />} />
+                  <Route path="/accounts" element={<Accounts />} />
+                  <Route path="/categories" element={<Categories />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/budgets" element={<Budgets />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          ) : (
+            <Navigate to="/auth" replace />
+          )
+        } />
+      </Routes>
+    </Suspense>
   )
 }
 
