@@ -52,6 +52,7 @@ type AccountFormData = z.infer<typeof accountSchema>
 interface AccountFormProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
   initialData?: Partial<AccountFormData>
   mode?: 'create' | 'edit'
 }
@@ -72,6 +73,7 @@ const colors = [
 export const AccountForm: React.FC<AccountFormProps> = ({
   isOpen,
   onClose,
+  onSuccess,
   initialData,
   mode = 'create'
 }) => {
@@ -177,6 +179,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   }
 
   const onSubmit = async (data: AccountFormData) => {
+    // Previne submissão se não estiver na última etapa (modo create)
+    if (mode === 'create' && currentStep < totalSteps) {
+      return
+    }
+    
     setIsSubmitting(true)
     
     try {
@@ -188,7 +195,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         setCurrentStep(1)
         setFormattedBalance('')
         reset()
-        onClose()
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          onClose()
+        }
       }
     } catch (error) {
       console.error('Erro ao salvar conta:', error)
@@ -273,7 +284,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
         {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto">
-          <form id="account-form" onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-5 space-y-3 sm:space-y-4 pb-0">
+          <form id="account-form" onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-5 space-y-3 sm:space-y-4 pb-0" noValidate>
             
             {/* Step 1: Informações Básicas */}
             {(currentStep === 1 || mode === 'edit') && (
@@ -437,7 +448,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <button
                 type="submit"
                 form="account-form"
-                disabled={isSubmitting || (mode === 'create' && !isStepValid(currentStep))}
+                disabled={isSubmitting || (mode === 'create' && (!isStepValid(currentStep) || currentStep < totalSteps))}
                 className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
                 {isSubmitting && <LoadingSpinner size="sm" className="mr-2" />}

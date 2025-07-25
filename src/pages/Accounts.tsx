@@ -45,6 +45,11 @@ export const Accounts: React.FC = () => {
     setEditingAccount(null)
   }
 
+  const handleAccountSuccess = () => {
+    // A lista será atualizada automaticamente pelo hook useAccounts
+    handleCloseForm()
+  }
+
   const totalBalance = accounts.reduce((sum, account) => sum + Number(account.saldo), 0)
 
   if (loading) {
@@ -114,64 +119,68 @@ export const Accounts: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {accounts.map((account) => (
-            <div key={account.id} className="card hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
+        <div className="card">
+          <div className="divide-y divide-border-default dark:divide-border-dark-default">
+            {accounts.map((account) => (
+              <div key={account.id} className="p-4 hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center flex-1">
                     <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${account.cor}20` }}
                     >
                       <div 
-                        className="w-6 h-6 rounded-full"
+                        className="w-5 h-5 rounded-full"
                         style={{ backgroundColor: account.cor }}
                       />
                     </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-fg-default dark:text-fg-dark-default">{account.nome}</h3>
-                      <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{getAccountTypeLabel(account.tipo)}</p>
+                    <div className="ml-4 flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-fg-default dark:text-fg-dark-default truncate">{account.nome}</h3>
+                          <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{getAccountTypeLabel(account.tipo)}</p>
+                          {account.descricao && (
+                            <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1 truncate">{account.descricao}</p>
+                          )}
+                        </div>
+                        <div className="ml-4 text-right flex-shrink-0">
+                          <span className={`text-lg font-bold ${
+                            Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+                          }`}>
+                            {showBalances ? formatCurrency(Number(account.saldo)) : '••••••'}
+                          </span>
+                          <p className="text-xs text-fg-muted dark:text-fg-dark-muted">Saldo Atual</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 ml-4">
                     <button
                       onClick={() => handleEdit(account)}
                       className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
+                      title="Editar conta"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(account)}
                       className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-danger-fg dark:hover:text-danger-dark-fg transition-colors"
+                      title="Excluir conta"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
-
-                <div className="border-t border-border-default dark:border-border-dark-default pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Saldo Atual</span>
-                    <span className={`text-xl font-bold ${
-                      Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
-                    }`}>
-                      {showBalances ? formatCurrency(Number(account.saldo)) : '••••••'}
-                    </span>
-                  </div>
-                  {account.descricao && (
-                    <p className="text-sm text-fg-muted dark:text-fg-dark-muted mt-2">{account.descricao}</p>
-                  )}
-                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
       <AccountForm
         isOpen={showForm}
         onClose={handleCloseForm}
+        onSuccess={handleAccountSuccess}
         initialData={editingAccount}
         mode={editingAccount ? 'edit' : 'create'}
       />
