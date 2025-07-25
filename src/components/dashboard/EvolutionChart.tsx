@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { EvolutionData } from '../../hooks/useDashboard'
 import { TrendingUp } from 'lucide-react'
@@ -9,6 +9,8 @@ interface EvolutionChartProps {
 }
 
 export const EvolutionChart: React.FC<EvolutionChartProps> = ({ data, loading }) => {
+  const [themeKey, setThemeKey] = useState(0)
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -17,6 +19,39 @@ export const EvolutionChart: React.FC<EvolutionChartProps> = ({ data, loading })
       maximumFractionDigits: 0
     }).format(value)
   }
+
+  // Cores adaptáveis ao tema
+  const getChartColors = () => {
+    const isDark = document.documentElement.classList.contains('dark')
+    return {
+      grid: isDark ? '#30363d' : '#d0d7de',
+      text: isDark ? '#848d97' : '#656d76',
+      textSecondary: isDark ? '#7d8590' : '#6e7781',
+      receitas: isDark ? '#3fb950' : '#1f883d',
+      despesas: isDark ? '#f85149' : '#a40e26',
+      saldo: isDark ? '#2f81f7' : '#0969da'
+    }
+  }
+
+  const colors = getChartColors()
+
+  // Detectar mudanças de tema
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          setThemeKey(prev => prev + 1)
+        }
+      })
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    })
+
+    return () => observer.disconnect()
+  }, [])
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -81,44 +116,99 @@ export const EvolutionChart: React.FC<EvolutionChartProps> = ({ data, loading })
         <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Evolução Financeira (6 meses)</h3>
       </div>
       <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" key={themeKey}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-muted)" />
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke={colors.grid}
+              opacity={0.3}
+            />
             <XAxis 
               dataKey="mes" 
-              stroke="var(--color-fg-muted)"
+              stroke={colors.text}
               fontSize={12}
+              tick={{ 
+                fill: colors.text,
+                fontSize: 12
+              }}
+              axisLine={{ stroke: colors.grid }}
+              tickLine={{ stroke: colors.grid }}
             />
             <YAxis 
               tickFormatter={formatCurrency} 
-              stroke="var(--color-fg-muted)"
+              stroke={colors.text}
               fontSize={12}
+              tick={{ 
+                fill: colors.text,
+                fontSize: 12
+              }}
+              axisLine={{ stroke: colors.grid }}
+              tickLine={{ stroke: colors.grid }}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Legend />
+            <Legend 
+              wrapperStyle={{
+                color: colors.text,
+                fontSize: '12px',
+                fontWeight: '500'
+              }}
+            />
             <Line 
               type="monotone" 
               dataKey="receitas" 
-              stroke="var(--color-success-emphasis)" 
+              stroke={colors.receitas}
               strokeWidth={3}
               name="Receitas"
-              dot={{ fill: 'var(--color-success-emphasis)', strokeWidth: 2, r: 4 }}
+              dot={{ 
+                fill: colors.receitas, 
+                strokeWidth: 2, 
+                r: 5,
+                stroke: colors.receitas
+              }}
+              activeDot={{ 
+                r: 6, 
+                fill: colors.receitas,
+                stroke: colors.receitas,
+                strokeWidth: 2
+              }}
             />
             <Line 
               type="monotone" 
               dataKey="despesas" 
-              stroke="var(--color-danger-emphasis)" 
+              stroke={colors.despesas}
               strokeWidth={3}
               name="Despesas"
-              dot={{ fill: 'var(--color-danger-emphasis)', strokeWidth: 2, r: 4 }}
+              dot={{ 
+                fill: colors.despesas, 
+                strokeWidth: 2, 
+                r: 5,
+                stroke: colors.despesas
+              }}
+              activeDot={{ 
+                r: 6, 
+                fill: colors.despesas,
+                stroke: colors.despesas,
+                strokeWidth: 2
+              }}
             />
             <Line 
               type="monotone" 
               dataKey="saldo" 
-              stroke="var(--color-accent-emphasis)" 
+              stroke={colors.saldo}
               strokeWidth={3}
               name="Saldo Líquido"
-              dot={{ fill: 'var(--color-accent-emphasis)', strokeWidth: 2, r: 4 }}
+              dot={{ 
+                fill: colors.saldo, 
+                strokeWidth: 2, 
+                r: 5,
+                stroke: colors.saldo
+              }}
+              activeDot={{ 
+                r: 6, 
+                fill: colors.saldo,
+                stroke: colors.saldo,
+                strokeWidth: 2
+              }}
             />
           </LineChart>
         </ResponsiveContainer>

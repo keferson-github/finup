@@ -7,7 +7,7 @@ import { CategoryChart } from '../components/dashboard/CategoryChart'
 import { RecentTransactions } from '../components/dashboard/RecentTransactions'
 import { UpcomingTransactions } from '../components/dashboard/UpcomingTransactions'
 import { BudgetStatus } from '../components/dashboard/BudgetStatus'
-import { QuickActions } from '../components/dashboard/QuickActions'
+import { FinancialHealth } from '../components/dashboard/FinancialHealth'
 import { TransactionForm } from '../components/transactions/TransactionForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 
@@ -81,16 +81,17 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Status dos Orçamentos e Ações Rápidas */}
+      {/* Status dos Orçamentos e Saúde Financeira */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Status dos Orçamentos */}
         <BudgetStatus data={budgetStatus} loading={loading} />
         
-        {/* Ações Rápidas */}
-        <QuickActions
-          onAddTransaction={handleAddTransaction}
-          onAddAccount={handleAddAccount}
-          onViewReports={handleViewReports}
+        {/* Saúde Financeira */}
+        <FinancialHealth
+          summary={summary}
+          evolution={evolution}
+          budgetStatus={budgetStatus}
+          loading={loading}
         />
       </div>
       
