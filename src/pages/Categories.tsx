@@ -30,6 +30,7 @@ export const Categories: React.FC = () => {
   const handleCloseForm = () => {
     setShowForm(false)
     setEditingCategory(null)
+    // Não é necessário recarregar as categorias aqui, pois o estado já foi atualizado no hook useCategories
   }
 
   const handleCloseDeleteModal = () => {
@@ -38,6 +39,7 @@ export const Categories: React.FC = () => {
   }
 
   const handleNewCategory = (tipo?: 'receita' | 'despesa') => {
+    // Apenas definir o tipo inicial, mas manter o modo como 'create'
     setEditingCategory(tipo ? { tipo } : null)
     setShowForm(true)
   }
@@ -189,7 +191,7 @@ export const Categories: React.FC = () => {
         isOpen={showForm}
         onClose={handleCloseForm}
         initialData={editingCategory}
-        mode={editingCategory ? 'edit' : 'create'}
+        mode={editingCategory && editingCategory.id ? 'edit' : 'create'}
       />
 
       <CategoryDeleteModal

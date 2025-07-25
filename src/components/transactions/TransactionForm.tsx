@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { X, Calendar, DollarSign, Tag, CreditCard, FileText, Repeat, Calculator, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -7,6 +7,7 @@ import { useTransactions } from '../../hooks/useTransactions'
 import { useAccounts } from '../../hooks/useAccounts'
 import { useCategories } from '../../hooks/useCategories'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import { NumericFormat } from 'react-number-format'
 
 const transactionSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -52,6 +53,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     handleSubmit,
     watch,
     reset,
+    control,
     formState: { errors }
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
@@ -224,13 +226,28 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
                       Valor *
                     </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register('amount', { valueAsNumber: true })}
-                      className="input"
-                      placeholder="0.00"
-                    />
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
+                      <Controller
+                        name="amount"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <NumericFormat
+                            value={value}
+                            onValueChange={(values) => {
+                              onChange(values.floatValue);
+                            }}
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            decimalScale={2}
+                            fixedDecimalScale
+                            prefix="R$ "
+                            placeholder="R$ 0,00"
+                            className="input pl-10"
+                          />
+                        )}
+                      />
+                    </div>
                     {errors.amount && (
                       <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.amount.message}</p>
                     )}
@@ -241,53 +258,57 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
             {/* Step 2: Detalhes da Transação */}
             {currentStep === 2 && (
-              <div className="space-y-4">
+              <div className="space-y-4" style={{ minHeight: '300px' }}>
                 {/* Account and Category */}
-                <div>
-                  <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                    Conta *
-                  </label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
-                    <select
-                      {...register('account_id')}
-                      className="input pl-10 appearance-none"
-                    >
-                      <option value="">Selecione uma conta</option>
-                      {accounts.map(account => (
-                        <option key={account.id} value={account.id}>
-                          {account.nome}
-                        </option>
-                      ))}
-                    </select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Conta *
+                    </label>
+                    <div className="relative">
+                      <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
+                      <select
+                        {...register('account_id')}
+                        className="input pl-10 w-full appearance-none bg-canvas-default dark:bg-canvas-dark-default"
+                        style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3e%3cpath stroke=%27%236b7280%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                      >
+                        <option value="">Selecione uma conta</option>
+                        {accounts.map(account => (
+                          <option key={account.id} value={account.id}>
+                            {account.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {errors.account_id && (
+                      <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.account_id.message}</p>
+                    )}
                   </div>
-                  {errors.account_id && (
-                    <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.account_id.message}</p>
-                  )}
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                    Categoria
-                  </label>
-                  <div className="relative">
-                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
-                    <select
-                      {...register('category_id')}
-                      className="input pl-10 appearance-none"
-                    >
-                      <option value="">Selecione uma categoria</option>
-                      {filteredCategories.map(category => (
-                        <option key={category.id} value={category.id}>
-                          {category.nome}
-                        </option>
-                      ))}
-                    </select>
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Categoria
+                    </label>
+                    <div className="relative">
+                      <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
+                      <select
+                        {...register('category_id')}
+                        className="input pl-10 w-full appearance-none bg-canvas-default dark:bg-canvas-dark-default"
+                        style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3e%3cpath stroke=%27%236b7280%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {filteredCategories.map(category => (
+                          <option key={category.id} value={category.id}>
+                            {category.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
                 {/* Date and Status */}
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
                       Data *
@@ -297,7 +318,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                       <input
                         type="date"
                         {...register('date')}
-                        className="input pl-10"
+                        className="input pl-10 w-full"
+                        style={{ colorScheme: 'auto' }}
                       />
                     </div>
                     {errors.date && (
@@ -309,28 +331,31 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
                       Status
                     </label>
-                    <select
-                      {...register('status')}
-                      className="input"
-                    >
-                      <option value="paid">Pago</option>
-                      <option value="pending">Pendente</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                      Descrição
-                    </label>
                     <div className="relative">
-                      <FileText className="absolute left-3 top-3 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
-                      <textarea
-                        {...register('description')}
-                        rows={3}
-                        className="input pl-10 resize-none"
-                        placeholder="Adicione uma descrição..."
-                      />
+                      <select
+                        {...register('status')}
+                        className="input w-full appearance-none bg-canvas-default dark:bg-canvas-dark-default"
+                        style={{ backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3e%3cpath stroke=%27%236b7280%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+                      >
+                        <option value="paid">Pago</option>
+                        <option value="pending">Pendente</option>
+                      </select>
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                    Descrição
+                  </label>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-3 h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
+                    <textarea
+                      {...register('description')}
+                      rows={3}
+                      className="input pl-10 resize-none w-full"
+                      placeholder="Adicione uma descrição..."
+                    />
                   </div>
                 </div>
               </div>

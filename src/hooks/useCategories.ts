@@ -131,8 +131,16 @@ export const useCategories = () => {
 
       if (error) throw error
 
+      // Atualizar o estado local imediatamente para uma resposta mais rápida
+      setCategories(prevCategories => 
+        prevCategories.map(category => 
+          category.id === id ? { ...category, ...data } : category
+        )
+      )
+      
       toast.success('Categoria atualizada com sucesso!')
-      await loadCategories()
+      // Carregar categorias em segundo plano para garantir sincronização
+      loadCategories()
       return { success: true, data }
     } catch (error: any) {
       console.error('Error updating category:', error)
