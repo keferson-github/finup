@@ -15,7 +15,7 @@ export interface TransactionWithDetails extends Transaction {
   } | null
 }
 
-export const useTransactions = () => {
+export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
   const { user } = useAuthContext()
   const [transactions, setTransactions] = useState<TransactionWithDetails[]>([])
   const [loading, setLoading] = useState(false)
@@ -164,6 +164,12 @@ export const useTransactions = () => {
 
       toast.success('Transaction created successfully!')
       await loadTransactions()
+      
+      // Notify dashboard to refresh
+      if (onTransactionChange) {
+        await onTransactionChange()
+      }
+      
       return { success: true, data }
     } catch (error: any) {
       console.error('Error creating transaction:', error)
@@ -188,6 +194,12 @@ export const useTransactions = () => {
 
       toast.success('Transaction updated successfully!')
       await loadTransactions()
+      
+      // Notify dashboard to refresh
+      if (onTransactionChange) {
+        await onTransactionChange()
+      }
+      
       return { success: true, data }
     } catch (error: any) {
       console.error('Error updating transaction:', error)
@@ -210,6 +222,12 @@ export const useTransactions = () => {
 
       toast.success('Transaction deleted successfully!')
       await loadTransactions()
+      
+      // Notify dashboard to refresh
+      if (onTransactionChange) {
+        await onTransactionChange()
+      }
+      
       return { success: true }
     } catch (error: any) {
       console.error('Error deleting transaction:', error)
@@ -219,11 +237,11 @@ export const useTransactions = () => {
   }
 
   const markAsPaid = async (id: string) => {
-    return updateTransaction(id, { status: 'paid' })
+    return updateTransaction(id, { status: 'pago' })
   }
 
   const markAsPending = async (id: string) => {
-    return updateTransaction(id, { status: 'pending' })
+    return updateTransaction(id, { status: 'pendente' })
   }
 
   useEffect(() => {

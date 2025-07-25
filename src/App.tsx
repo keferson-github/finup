@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuthContext } from './contexts/AuthContext'
+import { DashboardProvider } from './contexts/DashboardContext'
 import { Layout } from './components/layout/Layout'
 import { LoadingSpinner } from './components/ui/LoadingSpinner'
 
@@ -38,26 +39,28 @@ const AppRoutes: React.FC = () => {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/*" element={
           user ? (
-            <Layout>
-              <Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <LoadingSpinner size="md" />
-                </div>
-              }>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/transactions" element={<Transactions />} />
-                  <Route path="/accounts" element={<Accounts />} />
-                  <Route path="/categories" element={<Categories />} />
-                  <Route path="/reports" element={<Reports />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/budgets" element={<Budgets />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-            </Layout>
+            <DashboardProvider>
+              <Layout>
+                <Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <LoadingSpinner size="md" />
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/transactions" element={<Transactions />} />
+                    <Route path="/accounts" element={<Accounts />} />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/budgets" element={<Budgets />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Suspense>
+              </Layout>
+            </DashboardProvider>
           ) : (
             <Navigate to="/auth" replace />
           )

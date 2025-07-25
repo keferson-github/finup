@@ -6,6 +6,7 @@ import { X, Calendar, DollarSign, Tag, CreditCard, FileText, Repeat, Calculator,
 import { useTransactions } from '../../hooks/useTransactions'
 import { useAccounts } from '../../hooks/useAccounts'
 import { useCategories } from '../../hooks/useCategories'
+import { useDashboardContext } from '../../contexts/DashboardContext'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 import { NumericFormat } from 'react-number-format'
 
@@ -44,7 +45,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const { createTransaction } = useTransactions()
+  const { refreshDashboard } = useDashboardContext()
+  const { createTransaction } = useTransactions(refreshDashboard)
   const { accounts } = useAccounts()
   const { categories } = useCategories()
 

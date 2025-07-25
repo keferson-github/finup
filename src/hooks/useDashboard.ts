@@ -4,6 +4,7 @@ import { useAuthContext } from '../contexts/AuthContext'
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import toast from 'react-hot-toast'
+// Removido import de dados mock - usando apenas dados reais
 
 export interface DashboardSummary {
   totalReceitas: number
@@ -40,15 +41,15 @@ export interface RecentTransaction {
   tipo: 'receita' | 'despesa'
   status: 'pago' | 'pendente' | 'vencido'
   data: string
-  category: {
+  categoria: {
     nome: string
     cor: string
     icone: string
   } | null
-  account: {
+  conta: {
     nome: string
     cor: string
-  }
+  } | null
 }
 
 export interface UpcomingTransaction {
@@ -65,7 +66,7 @@ export interface UpcomingTransaction {
   account: {
     nome: string
     cor: string
-  }
+  } | null
 }
 
 export interface BudgetStatus {
@@ -234,6 +235,13 @@ export const useDashboard = () => {
         .lte('data', monthEnd)
         .not('category_id', 'is', null)
 
+      // Se não há transações reais, exibir lista vazia
+      if (!transactions || transactions.length === 0) {
+        console.log('Nenhuma transação encontrada para o período')
+        setCategorySummary([])
+        return
+      }
+
       const categoryMap = new Map<string, {
         nome: string
         cor: string
@@ -282,6 +290,9 @@ export const useDashboard = () => {
     } catch (error: any) {
       console.error('Erro ao carregar resumo por categoria:', error)
       toast.error('Erro ao carregar resumo por categoria')
+      
+      // Em caso de erro, exibir lista vazia
+      setCategorySummary([])
     }
   }
 
@@ -289,7 +300,7 @@ export const useDashboard = () => {
     if (!user) return
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('transactions')
         .select(`
           id,
@@ -298,12 +309,18 @@ export const useDashboard = () => {
           tipo,
           status,
           data,
+          criado_em,
           categories(nome, cor, icone),
-          accounts!inner(nome, cor)
+          accounts(nome, cor)
         `)
         .eq('user_id', user.id)
         .order('criado_em', { ascending: false })
-        .limit(20)
+        .limit(50)
+
+      if (error) {
+        console.error('Erro na consulta Supabase:', error)
+        throw error
+      }
 
       const formattedTransactions: RecentTransaction[] = data?.map(t => ({
         id: t.id,
@@ -312,22 +329,24 @@ export const useDashboard = () => {
         tipo: t.tipo,
         status: t.status,
         data: t.data,
-        category: (t.categories && Array.isArray(t.categories) && t.categories.length > 0) ? {
-          nome: t.categories[0].nome,
-          cor: t.categories[0].cor,
-          icone: t.categories[0].icone
+        categoria: t.categories ? {
+          nome: (t.categories as any)?.nome || 'Categoria sem nome',
+          cor: (t.categories as any)?.cor || '#6B7280',
+          icone: (t.categories as any)?.icone || '📊'
         } : null,
-        account: {
-          nome: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].nome : 'Conta não informada',
-          cor: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].cor : '#6B7280'
-        }
+        conta: t.accounts ? {
+          nome: (t.accounts as any)?.nome || 'Conta não informada',
+          cor: (t.accounts as any)?.cor || '#6B7280'
+        } : null
       })) || []
 
+      console.log(`Carregadas ${formattedTransactions.length} transações recentes`)
       setRecentTransactions(formattedTransactions)
 
     } catch (error: any) {
       console.error('Erro ao carregar transações recentes:', error)
       toast.error('Erro ao carregar transações recentes')
+      setRecentTransactions([])
     }
   }
 
@@ -336,9 +355,9 @@ export const useDashboard = () => {
 
     try {
       const today = new Date()
-      const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+      const nextMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('transactions')
         .select(`
           id,
@@ -346,15 +365,23 @@ export const useDashboard = () => {
           valor,
           tipo,
           data,
+          criado_em,
           categories(nome, cor, icone),
-          accounts!inner(nome, cor)
+          accounts(nome, cor)
         `)
         .eq('user_id', user.id)
         .eq('status', 'pendente')
         .gte('data', format(today, 'yyyy-MM-dd'))
-        .lte('data', format(nextWeek, 'yyyy-MM-dd'))
+        .lte('data', format(nextMonth, 'yyyy-MM-dd'))
         .order('data', { ascending: true })
-        .limit(5)
+        .limit(50)
+
+      if (error) {
+        console.error('Erro do Supabase ao carregar próximas transações:', error)
+        toast.error('Erro ao carregar próximas transações')
+        setUpcomingTransactions([])
+        return
+      }
 
       const formattedTransactions: UpcomingTransaction[] = data?.map(t => ({
         id: t.id,
@@ -362,22 +389,24 @@ export const useDashboard = () => {
         valor: Number(t.valor) || 0,
         tipo: t.tipo,
         data: t.data,
-        category: (t.categories && Array.isArray(t.categories) && t.categories.length > 0) ? {
-          nome: t.categories[0].nome,
-          cor: t.categories[0].cor,
-          icone: t.categories[0].icone
+        category: t.categories ? {
+          nome: (t.categories as any)?.nome || 'Categoria sem nome',
+          cor: (t.categories as any)?.cor || '#6B7280',
+          icone: (t.categories as any)?.icone || '📊'
         } : null,
-        account: {
-          nome: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].nome : 'Conta não informada',
-          cor: (Array.isArray(t.accounts) && t.accounts.length > 0) ? t.accounts[0].cor : '#6B7280'
-        }
+        account: t.accounts ? {
+          nome: (t.accounts as any)?.nome || 'Conta não informada',
+          cor: (t.accounts as any)?.cor || '#6B7280'
+        } : null
       })) || []
 
+      console.log(`Carregadas ${formattedTransactions.length} próximas transações`)
       setUpcomingTransactions(formattedTransactions)
 
     } catch (error: any) {
       console.error('Erro ao carregar próximas transações:', error)
       toast.error('Erro ao carregar próximas transações')
+      setUpcomingTransactions([])
     }
   }
 
@@ -386,23 +415,60 @@ export const useDashboard = () => {
 
     try {
       const now = new Date()
-      const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
-      const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
+      const currentMonthStart = format(startOfMonth(now), 'yyyy-MM-dd')
+      const currentMonthEnd = format(endOfMonth(now), 'yyyy-MM-dd')
 
-      const { data: budgets } = await supabase
+      // Buscar todos os orçamentos ativos do usuário
+      const { data: budgets, error: budgetsError } = await supabase
         .from('budgets')
         .select('*')
         .eq('user_id', user.id)
         .eq('ativo', true)
-        .gte('data_inicio', monthStart)
-        .lte('data_inicio', monthEnd)
+        .order('criado_em', { ascending: false })
+        .limit(20)
 
-      if (!budgets) return
+      if (budgetsError) {
+        console.error('Erro do Supabase ao carregar orçamentos:', budgetsError)
+        toast.error('Erro ao carregar orçamentos')
+        setBudgetStatus([])
+        return
+      }
+
+      if (!budgets || budgets.length === 0) {
+        setBudgetStatus([])
+        return
+      }
 
       const budgetStatusData: BudgetStatus[] = []
 
       for (const budget of budgets) {
         if (!budget || !budget.id) continue
+        
+        // Determinar período de análise baseado no tipo de orçamento
+        let dataInicio: string
+        let dataFim: string
+        
+        switch (budget.periodo) {
+          case 'mensal':
+            dataInicio = currentMonthStart
+            dataFim = currentMonthEnd
+            break
+          case 'semanal':
+            const weekStart = new Date(now)
+            weekStart.setDate(now.getDate() - now.getDay())
+            const weekEnd = new Date(weekStart)
+            weekEnd.setDate(weekStart.getDate() + 6)
+            dataInicio = format(weekStart, 'yyyy-MM-dd')
+            dataFim = format(weekEnd, 'yyyy-MM-dd')
+            break
+          case 'anual':
+            dataInicio = format(new Date(now.getFullYear(), 0, 1), 'yyyy-MM-dd')
+            dataFim = format(new Date(now.getFullYear(), 11, 31), 'yyyy-MM-dd')
+            break
+          default:
+            dataInicio = budget.data_inicio || currentMonthStart
+            dataFim = budget.data_fim || currentMonthEnd
+        }
         
         // Calcular gasto atual do orçamento
         let query = supabase
@@ -410,27 +476,31 @@ export const useDashboard = () => {
           .select('valor')
           .eq('user_id', user.id)
           .eq('tipo', 'despesa')
-          .eq('status', 'pago')
-          .gte('data', budget.data_inicio || format(new Date(), 'yyyy-MM-dd'))
+          .in('status', ['pago', 'pendente']) // Incluir pendentes para melhor controle
+          .gte('data', dataInicio)
+          .lte('data', dataFim)
 
-        if (budget.data_fim) {
-          query = query.lte('data', budget.data_fim)
-        }
-
+        // Filtrar por categorias se especificado
         if (budget.category_ids && Array.isArray(budget.category_ids) && budget.category_ids.length > 0) {
           query = query.in('category_id', budget.category_ids)
         }
 
+        // Filtrar por contas se especificado
         if (budget.account_ids && Array.isArray(budget.account_ids) && budget.account_ids.length > 0) {
           query = query.in('account_id', budget.account_ids)
         }
 
-        const { data: transactions } = await query
+        const { data: transactions, error: transactionsError } = await query
+
+        if (transactionsError) {
+          console.error('Erro ao buscar transações do orçamento:', transactionsError)
+          continue
+        }
 
         const valorGasto = transactions?.reduce((sum, t) => sum + (Number(t.valor) || 0), 0) || 0
         const valorLimite = Number(budget.valor_limite) || 0
         const progressoPercentual = valorLimite > 0 
-          ? Math.min((valorGasto / valorLimite) * 100, 100)
+          ? (valorGasto / valorLimite) * 100
           : 0
 
         let status: 'ok' | 'alerta' | 'ultrapassado' = 'ok'
@@ -461,19 +531,21 @@ export const useDashboard = () => {
         budgetStatusData.push({
           id: budget.id,
           nome: budget.nome || 'Orçamento sem nome',
-          valor_limite: Number(budget.valor_limite) || 0,
+          valor_limite: valorLimite,
           valor_gasto: valorGasto,
-          progresso_percentual: progressoPercentual,
+          progresso_percentual: Math.min(progressoPercentual, 999), // Limitar para evitar valores muito altos
           status,
           categoria_principal: categoriaPrincipal
         })
       }
 
+      console.log(`Carregados ${budgetStatusData.length} status de orçamentos`)
       setBudgetStatus(budgetStatusData)
 
     } catch (error: any) {
       console.error('Erro ao carregar status dos orçamentos:', error)
       toast.error('Erro ao carregar status dos orçamentos')
+      setBudgetStatus([])
     }
   }
 

@@ -8,13 +8,12 @@ import {
   AlertCircle,
   Filter,
   Search,
-  Calendar,
-  Tag,
   CreditCard
 } from 'lucide-react'
 import { useTransactions, TransactionWithDetails } from '../../hooks/useTransactions'
 import { useAccounts } from '../../hooks/useAccounts'
 import { useCategories } from '../../hooks/useCategories'
+import { useDashboardContext } from '../../contexts/DashboardContext'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 
 interface TransactionListProps {
@@ -24,7 +23,8 @@ interface TransactionListProps {
 export const TransactionList: React.FC<TransactionListProps> = ({
   onEditTransaction
 }) => {
-  const { transactions, loading, markAsPaid, markAsPending, deleteTransaction } = useTransactions()
+  const { refreshDashboard } = useDashboardContext()
+  const { transactions, loading, markAsPaid, markAsPending, deleteTransaction } = useTransactions(refreshDashboard)
   const { accounts } = useAccounts()
   const { categories } = useCategories()
   
@@ -49,11 +49,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'pago':
         return <CheckCircle className="h-4 w-4 text-emerald-600" />
-      case 'pending':
+      case 'pendente':
         return <Clock className="h-4 w-4 text-amber-600" />
-      case 'overdue':
+      case 'vencido':
         return <AlertCircle className="h-4 w-4 text-red-600" />
       default:
         return <Clock className="h-4 w-4 text-gray-400" />
@@ -62,11 +62,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'pago':
         return 'bg-emerald-100 text-emerald-800'
-      case 'pending':
+      case 'pendente':
         return 'bg-amber-100 text-amber-800'
-      case 'overdue':
+      case 'vencido':
         return 'bg-red-100 text-red-800'
       default:
         return 'bg-gray-100 text-gray-800'
@@ -74,7 +74,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   }
 
   const filteredTransactions = transactions.filter(transaction => {
-    if (filters.search && !transaction.title.toLowerCase().includes(filters.search.toLowerCase())) {
+    if (filters.search && !transaction.titulo.toLowerCase().includes(filters.search.toLowerCase())) {
       return false
     }
     if (filters.accountId && transaction.account_id !== filters.accountId) {
@@ -83,23 +83,29 @@ export const TransactionList: React.FC<TransactionListProps> = ({
     if (filters.categoryId && transaction.category_id !== filters.categoryId) {
       return false
     }
-    if (filters.type && transaction.type !== filters.type) {
+    if (filters.type) {
+      const tipoValue = filters.type === 'income' ? 'receita' : 'despesa'
+      if (transaction.tipo !== tipoValue) {
+        return false
+      }
+    }
+    if (filters.status) {
+      const statusValue = filters.status === 'paid' ? 'pago' : filters.status === 'pending' ? 'pendente' : 'vencido'
+      if (transaction.status !== statusValue) {
+        return false
+      }
+    }
+    if (filters.startDate && transaction.data < filters.startDate) {
       return false
     }
-    if (filters.status && transaction.status !== filters.status) {
-      return false
-    }
-    if (filters.startDate && transaction.date < filters.startDate) {
-      return false
-    }
-    if (filters.endDate && transaction.date > filters.endDate) {
+    if (filters.endDate && transaction.data > filters.endDate) {
       return false
     }
     return true
   })
 
   const handleStatusToggle = async (transaction: TransactionWithDetails) => {
-    if (transaction.status === 'paid') {
+    if (transaction.status === 'pago') {
       await markAsPending(transaction.id)
     } else {
       await markAsPaid(transaction.id)
@@ -194,7 +200,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
               <option value="">Todas as Contas</option>
               {accounts.map(account => (
                 <option key={account.id} value={account.id}>
-                  {account.name}
+                  {account.nome}
                 </option>
               ))}
             </select>
@@ -207,7 +213,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
               <option value="">Todas as Categorias</option>
               {categories.map(category => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {category.nome}
                 </option>
               ))}
             </select>
@@ -278,16 +284,16 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-fg-default dark:text-fg-dark-default">
-                          {transaction.title}
+                          {transaction.titulo}
                         </div>
-                        {transaction.description && (
+                        {transaction.descricao && (
                           <div className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                            {transaction.description}
+                            {transaction.descricao}
                           </div>
                         )}
-                        {transaction.is_installment && (
+                        {transaction.eh_parcelamento && (
                           <div className="text-xs text-accent-fg dark:text-accent-dark-fg mt-1">
-                            Parcela {transaction.installment_number}/{transaction.total_installments}
+                            Parcela {transaction.numero_parcela}/{transaction.total_parcelas}
                           </div>
                         )}
                       </div>
@@ -313,22 +319,22 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                           className="w-3 h-3 rounded-full mr-2"
                           style={{ backgroundColor: transaction.account.color }}
                         />
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm text-fg-default dark:text-fg-dark-default">
                           {transaction.account.name}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`text-sm font-medium ${
-                        transaction.type === 'income' ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+                        transaction.tipo === 'receita' ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
                       }`}>
-                        {transaction.type === 'income' ? '+' : '-'}
-                        {formatCurrency(transaction.amount)}
+                        {transaction.tipo === 'receita' ? '+' : '-'}
+                        {formatCurrency(transaction.valor)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-fg-default dark:text-fg-dark-default">
-                        {format(new Date(transaction.date), 'MMM dd, yyyy')}
+                        {format(new Date(transaction.data), 'MMM dd, yyyy')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -342,9 +348,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                         <button
                           onClick={() => handleStatusToggle(transaction)}
                           className="p-1 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
-                          title={transaction.status === 'paid' ? 'Marcar como pendente' : 'Marcar como pago'}
+                          title={transaction.status === 'pago' ? 'Marcar como pendente' : 'Marcar como pago'}
                         >
-                          {transaction.status === 'paid' ? (
+                          {transaction.status === 'pago' ? (
                             <Clock className="h-4 w-4" />
                           ) : (
                             <CheckCircle className="h-4 w-4" />

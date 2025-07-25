@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDashboard } from '../hooks/useDashboard'
+import { useDashboardContext } from '../contexts/DashboardContext'
 import { SummaryCards } from '../components/dashboard/SummaryCards'
 import { EvolutionChart } from '../components/dashboard/EvolutionChart'
 import { CategoryChart } from '../components/dashboard/CategoryChart'
@@ -12,7 +11,6 @@ import { TransactionForm } from '../components/transactions/TransactionForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 
 export const Dashboard: React.FC = () => {
-  const navigate = useNavigate()
   const [showTransactionForm, setShowTransactionForm] = useState(false)
   
   const {
@@ -23,19 +21,7 @@ export const Dashboard: React.FC = () => {
     recentTransactions,
     upcomingTransactions,
     budgetStatus
-  } = useDashboard()
-
-  const handleAddTransaction = () => {
-    setShowTransactionForm(true)
-  }
-
-  const handleAddAccount = () => {
-    navigate('/accounts')
-  }
-
-  const handleViewReports = () => {
-    navigate('/reports')
-  }
+  } = useDashboardContext()
 
 
 
