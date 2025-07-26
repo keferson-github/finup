@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuthContext } from '../contexts/AuthContext'
+import { triggerDashboardUpdate } from './useDashboardSync'
 import toast from 'react-hot-toast'
 
 export interface Account {
@@ -96,6 +97,9 @@ export const useAccounts = () => {
         await loadAccounts()
       }, 100)
 
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('account')
+
       return { success: true, data: newAccount }
     } catch (error: any) {
       console.error('Error creating account:', error)
@@ -137,6 +141,9 @@ export const useAccounts = () => {
       setTimeout(async () => {
         await loadAccounts()
       }, 100)
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('account')
 
       return { success: true, data }
     } catch (error: any) {
@@ -197,6 +204,9 @@ export const useAccounts = () => {
       setTimeout(async () => {
         await loadAccounts()
       }, 100)
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('account')
 
       return { success: true }
     } catch (error: any) {

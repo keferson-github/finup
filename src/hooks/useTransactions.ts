@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase, Transaction } from '../lib/supabase'
 import { useAuthContext } from '../contexts/AuthContext'
+import { triggerDashboardUpdate } from './useDashboardSync'
 import toast from 'react-hot-toast'
 
 export interface TransactionWithDetails extends Transaction {
@@ -169,6 +170,9 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       if (onTransactionChange) {
         await onTransactionChange()
       }
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('transaction')
       
       return { success: true, data }
     } catch (error: any) {
@@ -199,6 +203,9 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       if (onTransactionChange) {
         await onTransactionChange()
       }
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('transaction')
       
       return { success: true, data }
     } catch (error: any) {
@@ -227,6 +234,9 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       if (onTransactionChange) {
         await onTransactionChange()
       }
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('transaction')
       
       return { success: true }
     } catch (error: any) {

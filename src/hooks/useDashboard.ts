@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuthContext } from '../contexts/AuthContext'
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns'
@@ -549,7 +549,7 @@ export const useDashboard = () => {
     }
   }
 
-  const loadAllDashboardData = async () => {
+  const loadAllDashboardData = useCallback(async () => {
     if (!user) return
 
     setLoading(true)
@@ -567,13 +567,97 @@ export const useDashboard = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  // Função para atualização silenciosa (sem loading)
+  const refreshDashboardSilently = useCallback(async () => {
+    if (!user) return
+
+    try {
+      await Promise.all([
+        loadDashboardSummary(),
+        loadEvolutionData(),
+        loadCategorySummary(),
+        loadRecentTransactions(),
+        loadUpcomingTransactions(),
+        loadBudgetStatus()
+      ])
+    } catch (error) {
+      console.error('Erro ao atualizar dados do dashboard:', error)
+    }
+  }, [user])
+
+  // Configurar real-time subscriptions
+  useEffect(() => {
+    if (!user) return
+
+    // Subscription para transações
+    const transactionsSubscription = supabase
+      .channel('dashboard-transactions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transactions',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          console.log('Transação modificada - atualizando dashboard')
+          setTimeout(() => refreshDashboardSilently(), 100)
+        }
+      )
+      .subscribe()
+
+    // Subscription para contas
+    const accountsSubscription = supabase
+      .channel('dashboard-accounts')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'accounts',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          console.log('Conta modificada - atualizando dashboard')
+          setTimeout(() => refreshDashboardSilently(), 100)
+        }
+      )
+      .subscribe()
+
+    // Subscription para categorias
+    const categoriesSubscription = supabase
+      .channel('dashboard-categories')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'categories',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          console.log('Categoria modificada - atualizando dashboard')
+          setTimeout(() => refreshDashboardSilently(), 100)
+        }
+      )
+      .subscribe()
+
+    // Cleanup subscriptions
+    return () => {
+      supabase.removeChannel(transactionsSubscription)
+      supabase.removeChannel(accountsSubscription)
+      supabase.removeChannel(categoriesSubscription)
+    }
+  }, [user, refreshDashboardSilently])
 
   useEffect(() => {
     if (user) {
       loadAllDashboardData()
     }
-  }, [user])
+  }, [user, loadAllDashboardData])
 
   return {
     loading,
@@ -583,6 +667,7 @@ export const useDashboard = () => {
     recentTransactions,
     upcomingTransactions,
     budgetStatus,
-    loadAllDashboardData
+    loadAllDashboardData,
+    refreshDashboardSilently
   }
 }

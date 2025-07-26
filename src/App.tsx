@@ -6,6 +6,7 @@ import { AuthProvider, useAuthContext } from './contexts/AuthContext'
 import { DashboardProvider } from './contexts/DashboardContext'
 import { Layout } from './components/layout/Layout'
 import { LoadingSpinner } from './components/ui/LoadingSpinner'
+import { DashboardSyncWrapper } from './components/dashboard/DashboardSyncWrapper'
 
 // Lazy loading das páginas para code splitting
 const AuthPage = React.lazy(() => import('./pages/AuthPage').then(module => ({ default: module.AuthPage })))
@@ -40,26 +41,28 @@ const AppRoutes: React.FC = () => {
         <Route path="/*" element={
           user ? (
             <DashboardProvider>
-              <Layout>
-                <Suspense fallback={
-                  <div className="flex items-center justify-center p-8">
-                    <LoadingSpinner size="md" />
-                  </div>
-                }>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/transactions" element={<Transactions />} />
-                    <Route path="/accounts" element={<Accounts />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/reports" element={<Reports />} />
-                    <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/budgets" element={<Budgets />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Suspense>
-              </Layout>
+              <DashboardSyncWrapper>
+                <Layout>
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center p-8">
+                      <LoadingSpinner size="md" />
+                    </div>
+                  }>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/transactions" element={<Transactions />} />
+                      <Route path="/accounts" element={<Accounts />} />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/calendar" element={<Calendar />} />
+                      <Route path="/budgets" element={<Budgets />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </Suspense>
+                </Layout>
+              </DashboardSyncWrapper>
             </DashboardProvider>
           ) : (
             <Navigate to="/auth" replace />

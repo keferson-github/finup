@@ -3,6 +3,7 @@ import { useDashboard } from '../hooks/useDashboard'
 
 interface DashboardContextType {
   refreshDashboard: () => Promise<void>
+  refreshDashboardSilently: () => Promise<void>
   loading: boolean
   summary: any
   evolution: any
@@ -21,9 +22,14 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     await dashboardData.loadAllDashboardData()
   }, [dashboardData.loadAllDashboardData])
 
+  const refreshDashboardSilently = useCallback(async () => {
+    await dashboardData.refreshDashboardSilently()
+  }, [dashboardData.refreshDashboardSilently])
+
   const value = {
     ...dashboardData,
-    refreshDashboard
+    refreshDashboard,
+    refreshDashboardSilently
   }
 
   return (
