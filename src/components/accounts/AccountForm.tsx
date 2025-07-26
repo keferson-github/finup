@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { X, CreditCard, DollarSign, Palette, ChevronLeft, ChevronRight, Check } from 'lucide-react'
-import { useAccounts } from '../../hooks/useAccounts'
+import { X, CreditCard, DollarSign, Palette, ChevronLeft, ChevronRight, Check, Building2 } from 'lucide-react'
+import { useAccounts, Account } from '../../hooks/useAccounts'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import { getLogosForAccountType } from '../../data/logos'
 import toast from 'react-hot-toast'
 
 // Funções para formatação monetária
@@ -45,7 +46,22 @@ const accountSchema = z.object({
   tipo: z.enum(['conta_corrente', 'poupanca', 'cartao_credito', 'dinheiro', 'investimento']),
   saldo_inicial: z.number(),
   cor: z.string().min(1, 'Cor é obrigatória'),
-  descricao: z.string().min(1, 'Descrição é obrigatória')
+  descricao: z.string().min(1, 'Descrição é obrigatória').nullable(),
+  banco: z.string().optional().nullable(),
+  bandeira_cartao: z.string().optional().nullable()
+}).refine((data) => {
+  // Validação condicional: se for cartão de crédito, bandeira_cartao é obrigatória
+  if (data.tipo === 'cartao_credito') {
+    return data.bandeira_cartao && data.bandeira_cartao.trim().length > 0
+  }
+  // Se for conta bancária (não dinheiro), banco é obrigatório
+  if (['conta_corrente', 'poupanca', 'investimento'].includes(data.tipo)) {
+    return data.banco && data.banco.trim().length > 0
+  }
+  return true
+}, {
+  message: 'Selecione a instituição financeira apropriada para este tipo de conta',
+  path: ['banco'] // ou ['bandeira_cartao'] dependendo do contexto
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
@@ -54,7 +70,7 @@ interface AccountFormProps {
   isOpen: boolean
   onClose: () => void
   onSuccess?: () => void
-  initialData?: Partial<AccountFormData>
+  initialData?: Partial<AccountFormData> | Account
   mode?: 'create' | 'edit'
 }
 
@@ -81,7 +97,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [formattedBalance, setFormattedBalance] = useState('')
-  const totalSteps = 3
+  const totalSteps = 4
   const { createAccount, updateAccount } = useAccounts()
 
   const {
@@ -97,7 +113,20 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       tipo: 'conta_corrente',
       saldo_inicial: 0,
       cor: colors[0],
-      ...initialData
+      nome: '',
+      descricao: '',
+      banco: null,
+      bandeira_cartao: null,
+      ...initialData && {
+        id: initialData.id,
+        nome: initialData.nome || '',
+        tipo: initialData.tipo || 'conta_corrente',
+        saldo_inicial: initialData.saldo_inicial || 0,
+        cor: initialData.cor || colors[0],
+        descricao: initialData.descricao || '',
+        banco: initialData.banco || null,
+        bandeira_cartao: initialData.bandeira_cartao || null
+      }
     }
   })
 
@@ -105,6 +134,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   const watchNome = watch('nome')
   const watchTipo = watch('tipo')
   const watchDescricao = watch('descricao')
+  const watchBanco = watch('banco')
+  const watchBandeiraCartao = watch('bandeira_cartao')
 
   // Inicializar valor formatado quando há dados iniciais
   React.useEffect(() => {
@@ -112,6 +143,28 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       setFormattedBalance(formatCurrency(initialData.saldo_inicial))
     }
   }, [initialData])
+
+  // Reset form quando initialData mudar (para modo edit)
+  React.useEffect(() => {
+    if (initialData && mode === 'edit') {
+      const formData = {
+        id: initialData.id,
+        nome: initialData.nome || '',
+        tipo: initialData.tipo || 'conta_corrente',
+        saldo_inicial: initialData.saldo_inicial || 0,
+        cor: initialData.cor || colors[0],
+        descricao: initialData.descricao || '',
+        banco: initialData.banco,
+        bandeira_cartao: initialData.bandeira_cartao
+      } as AccountFormData
+      
+      reset(formData)
+      
+      if (initialData.saldo_inicial !== undefined) {
+        setFormattedBalance(formatCurrency(initialData.saldo_inicial))
+      }
+    }
+  }, [initialData, mode, reset])
   
   // Controlar o overflow do body quando o modal estiver aberto
   React.useEffect(() => {
@@ -146,12 +199,18 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     },
     {
       id: 2,
+      title: 'Instituição Financeira',
+      description: 'Selecione o banco ou bandeira',
+      fields: ['banco', 'bandeira_cartao']
+    },
+    {
+      id: 3,
       title: 'Configurações Financeiras',
       description: 'Saldo inicial da conta',
       fields: ['saldo_inicial']
     },
     {
-      id: 3,
+      id: 4,
       title: 'Personalização',
       description: 'Cor e descrição da conta',
       fields: ['cor', 'descricao']
@@ -166,8 +225,15 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       case 1:
         return watchNome && watchNome.trim().length > 0 && watchTipo
       case 2:
-        return true // Saldo inicial é opcional
+        // Validação para instituição financeira - opcional para dinheiro
+        if (watchTipo === 'dinheiro') return true
+        if (watchTipo === 'cartao_credito') {
+          return watchBandeiraCartao && watchBandeiraCartao.trim().length > 0
+        }
+        return watchBanco && watchBanco.trim().length > 0
       case 3:
+        return true // Saldo inicial é opcional
+      case 4:
         return watchColor && watchColor.trim().length > 0 && watchDescricao && watchDescricao.trim().length > 0
       default:
         return false
@@ -193,44 +259,73 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     onClose()
   }
 
-  const onSubmit = async (data: AccountFormData) => {
+  const onSubmit: SubmitHandler<AccountFormData> = async (data) => {
     // Previne submissão se não estiver na última etapa (modo create)
     if (mode === 'create' && currentStep < totalSteps) {
       return
     }
     
-    // Verifica se a cor foi selecionada
+    // Validações finais antes do envio
     if (!data.cor) {
       toast.error('Por favor, selecione uma cor para a conta')
       return
     }
     
-    // Verifica se a descrição foi preenchida
     if (!data.descricao || data.descricao.trim().length === 0) {
       toast.error('Por favor, adicione uma descrição para a conta')
+      return
+    }
+    
+    // Validação de instituição financeira
+    if (data.tipo === 'cartao_credito' && (!data.bandeira_cartao || data.bandeira_cartao.trim().length === 0)) {
+      toast.error('Por favor, selecione a bandeira do cartão de crédito')
+      return
+    }
+    
+    if (['conta_corrente', 'poupanca', 'investimento'].includes(data.tipo) && (!data.banco || data.banco.trim().length === 0)) {
+      toast.error('Por favor, selecione a instituição financeira')
       return
     }
     
     setIsSubmitting(true)
     
     try {
-      const result = mode === 'create' 
+      const result = mode === 'create'
         ? await createAccount({
-            ...data
+            nome: data.nome,
+            tipo: data.tipo,
+            saldo_inicial: data.saldo_inicial,
+            cor: data.cor,
+            descricao: data.descricao || undefined,
+            banco: data.banco || undefined,
+            bandeira_cartao: data.bandeira_cartao || undefined
           })
         : await updateAccount(initialData?.id as string, {
-            ...data
+            nome: data.nome,
+            tipo: data.tipo,
+            saldo_inicial: data.saldo_inicial,
+            cor: data.cor,
+            descricao: data.descricao || undefined,
+            banco: data.banco || undefined,
+            bandeira_cartao: data.bandeira_cartao || undefined
           })
       
       if (result.success) {
+        console.log(`💳 ✅ ${mode === 'create' ? 'Criação' : 'Edição'} de conta bem-sucedida:`, data.nome)
+        
+        // Reset do formulário
         setCurrentStep(1)
         setFormattedBalance('')
         reset()
+        
+        // Chamar callback de sucesso para atualizar a UI
         if (onSuccess) {
           onSuccess()
         } else {
           onClose()
         }
+        
+        // Toast de confirmação já é exibido no hook useAccounts
       }
     } catch (error) {
       console.error('Erro ao salvar conta:', error)
@@ -245,7 +340,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
-        <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[70vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-36">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[70vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-36">
         {/* Fixed Header */}
         <div className="p-4 sm:p-5 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
@@ -366,8 +461,111 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               </>
             )}
 
-            {/* Step 2: Configurações Financeiras */}
-            {(currentStep === 2 || mode === 'edit') && (
+            {/* Step 2: Instituição Financeira */}
+            {(currentStep === 2 || mode === 'edit') && watchTipo !== 'dinheiro' && (
+              <>
+                {watchTipo === 'cartao_credito' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Bandeira do Cartão *
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {getLogosForAccountType(watchTipo).map((logo) => (
+                        <label key={logo.id} className="relative">
+                          <input
+                            type="radio"
+                            value={logo.id}
+                            {...register('bandeira_cartao')}
+                            className="sr-only"
+                          />
+                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
+                            watchBandeiraCartao === logo.id
+                              ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
+                              : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
+                          }`}>
+                            <div className="flex flex-col items-center space-y-2">
+                              <img 
+                                src={logo.image} 
+                                alt={logo.name}
+                                className="w-12 h-8 object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement
+                                  target.style.display = 'none'
+                                  target.nextElementSibling?.classList.remove('hidden')
+                                }}
+                              />
+                              <CreditCard className="w-8 h-8 text-fg-muted dark:text-fg-dark-muted hidden" />
+                              <span className="text-sm font-medium text-fg-default dark:text-fg-dark-default text-center">
+                                {logo.name}
+                              </span>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                    {errors.bandeira_cartao && (
+                      <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
+                        Por favor, selecione a bandeira do cartão de crédito
+                      </p>
+                    )}
+                    <p className="mt-2 text-sm text-fg-muted dark:text-fg-dark-muted">
+                      Selecione a bandeira do seu cartão de crédito.
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Instituição Financeira *
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {getLogosForAccountType(watchTipo).map((logo) => (
+                        <label key={logo.id} className="relative">
+                          <input
+                            type="radio"
+                            value={logo.id}
+                            {...register('banco')}
+                            className="sr-only"
+                          />
+                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center justify-center ${
+                            watchBanco === logo.id
+                              ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
+                              : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
+                          }`}>
+                            <div className="flex flex-col items-center space-y-2">
+                              <img 
+                                src={logo.image} 
+                                alt={logo.name}
+                                className="w-12 h-8 object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement
+                                  target.style.display = 'none'
+                                  target.nextElementSibling?.classList.remove('hidden')
+                                }}
+                              />
+                              <Building2 className="w-8 h-8 text-fg-muted dark:text-fg-dark-muted hidden" />
+                              <span className="text-sm font-medium text-fg-default dark:text-fg-dark-default text-center">
+                                {logo.name}
+                              </span>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                    {errors.banco && (
+                      <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
+                        Por favor, selecione a instituição financeira
+                      </p>
+                    )}
+                    <p className="mt-2 text-sm text-fg-muted dark:text-fg-dark-muted">
+                      Selecione a instituição financeira da sua conta.
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Step 3: Configurações Financeiras */}
+            {(currentStep === 3 || mode === 'edit') && (
               <div>
                 <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
                   Saldo Inicial
@@ -393,8 +591,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               </div>
             )}
 
-            {/* Step 3: Personalização */}
-            {(currentStep === 3 || mode === 'edit') && (
+            {/* Step 4: Personalização */}
+            {(currentStep === 4 || mode === 'edit') && (
               <>
                 <div>
                   <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
@@ -421,7 +619,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                       ))}
                     </div>
                   </div>
-                  {!watchColor && currentStep === 3 && (
+                  {!watchColor && currentStep === 4 && (
                     <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
                       Por favor, selecione uma cor para continuar
                     </p>

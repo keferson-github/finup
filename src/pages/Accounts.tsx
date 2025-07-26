@@ -1,14 +1,16 @@
 import React from 'react'
-import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
+import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff, Building2 } from 'lucide-react'
 import { useState } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { AccountForm } from '../components/accounts/AccountForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
+import { getLogoById } from '../data/logos'
+import { Account } from '../hooks/useAccounts'
 
 export const Accounts: React.FC = () => {
-  const { accounts, loading, deleteAccount } = useAccounts()
+  const { accounts, loading, creating, updating, deleteAccount } = useAccounts()
   const [showForm, setShowForm] = useState(false)
-  const [editingAccount, setEditingAccount] = useState<any>(null)
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null)
   const [showBalances, setShowBalances] = useState(true)
 
   const formatCurrency = (amount: number) => {
@@ -29,12 +31,12 @@ export const Accounts: React.FC = () => {
     return types[type as keyof typeof types] || type
   }
 
-  const handleEdit = (account: any) => {
+  const handleEdit = (account: Account) => {
     setEditingAccount(account)
     setShowForm(true)
   }
 
-  const handleDelete = async (account: any) => {
+  const handleDelete = async (account: Account) => {
     if (window.confirm(`Tem certeza que deseja excluir a conta "${account.nome}"?`)) {
       await deleteAccount(account.id)
     }
@@ -46,11 +48,20 @@ export const Accounts: React.FC = () => {
   }
 
   const handleAccountSuccess = () => {
-    // A lista será atualizada automaticamente pelo hook useAccounts
+    // Fechar o formulário imediatamente
     handleCloseForm()
+    
+    // A lista será atualizada automaticamente pelo hook useAccounts via realtime
+    // e também pela atualização local imediata implementada no hook
+    console.log('💳 Conta processada com sucesso - reatividade ativa')
   }
 
-  const totalBalance = accounts.reduce((sum, account) => sum + Number(account.saldo), 0)
+  // Recalcular saldo total sempre que as contas mudarem
+  const totalBalance = React.useMemo(() => {
+    const total = accounts.reduce((sum, account) => sum + Number(account.saldo || 0), 0)
+    console.log('💳 📊 Saldo total recalculado:', formatCurrency(total), 'Contas:', accounts.length)
+    return total
+  }, [accounts])
 
   if (loading) {
     return (
@@ -80,10 +91,15 @@ export const Accounts: React.FC = () => {
               </button>
               <button 
                 onClick={() => setShowForm(true)}
-                className="btn btn-primary flex items-center"
+                disabled={creating}
+                className="btn btn-primary flex items-center disabled:opacity-50"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Conta
+                {creating ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-2" />
+                )}
+                {creating ? 'Criando...' : 'Nova Conta'}
               </button>
             </div>
           </div>
@@ -134,13 +150,45 @@ export const Accounts: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
                         <div 
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 relative"
                           style={{ backgroundColor: `${account.cor}20` }}
                         >
-                          <div 
-                            className="w-5 h-5 rounded-full"
-                            style={{ backgroundColor: account.cor }}
-                          />
+                          {/* Logo da instituição financeira */}
+                          {account.tipo === 'cartao_credito' && account.bandeira_cartao ? (
+                            <img 
+                              src={getLogoById(account.bandeira_cartao, 'credit')?.image}
+                              alt={getLogoById(account.bandeira_cartao, 'credit')?.name}
+                              className="w-8 h-5 object-contain"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                                target.nextElementSibling?.classList.remove('hidden')
+                              }}
+                            />
+                          ) : account.banco && ['conta_corrente', 'poupanca', 'investimento'].includes(account.tipo) ? (
+                            <img 
+                              src={getLogoById(account.banco, 'bank')?.image}
+                              alt={getLogoById(account.banco, 'bank')?.name}
+                              className="w-8 h-5 object-contain"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                                target.nextElementSibling?.classList.remove('hidden')
+                              }}
+                            />
+                          ) : null}
+                          
+                          {/* Fallback para ícone padrão */}
+                          {account.tipo === 'cartao_credito' ? (
+                            <CreditCard className={`w-5 h-5 text-white ${account.bandeira_cartao ? 'hidden' : ''}`} />
+                          ) : account.tipo === 'dinheiro' ? (
+                            <div 
+                              className="w-5 h-5 rounded-full"
+                              style={{ backgroundColor: account.cor }}
+                            />
+                          ) : (
+                            <Building2 className={`w-5 h-5 text-white ${account.banco ? 'hidden' : ''}`} />
+                          )}
                         </div>
                         <div className="ml-4 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
@@ -165,10 +213,15 @@ export const Accounts: React.FC = () => {
                       <div className="flex items-center space-x-2 ml-4">
                         <button
                           onClick={() => handleEdit(account)}
-                          className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
+                          disabled={updating}
+                          className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors disabled:opacity-50"
                           title="Editar conta"
                         >
-                          <Edit className="h-4 w-4" />
+                          {updating ? (
+                            <LoadingSpinner size="sm" />
+                          ) : (
+                            <Edit className="h-4 w-4" />
+                          )}
                         </button>
                         <button
                           onClick={() => handleDelete(account)}
@@ -191,7 +244,7 @@ export const Accounts: React.FC = () => {
         isOpen={showForm}
         onClose={handleCloseForm}
         onSuccess={handleAccountSuccess}
-        initialData={editingAccount}
+        initialData={editingAccount || undefined}
         mode={editingAccount ? 'edit' : 'create'}
       />
     </div>

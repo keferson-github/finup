@@ -57,7 +57,7 @@ export const useAccounts = () => {
     tipo: 'conta_corrente' | 'poupanca' | 'cartao_credito' | 'dinheiro' | 'investimento'
     saldo_inicial: number
     cor?: string
-    description?: string
+    descricao?: string
     banco?: string
     bandeira_cartao?: string
   }) => {
@@ -69,10 +69,13 @@ export const useAccounts = () => {
       const { data, error } = await supabase
         .from('accounts')
         .insert({
-          ...account,
-          user_id: user.id,
+          nome: account.nome,
+          tipo: account.tipo,
+          saldo_inicial: account.saldo_inicial,
           saldo: account.saldo_inicial,
-          descricao: account.description,
+          cor: account.cor,
+          descricao: account.descricao,
+          user_id: user.id,
           ativo: true,
           banco: account.banco || null,
           bandeira_cartao: account.bandeira_cartao || null
@@ -85,15 +88,20 @@ export const useAccounts = () => {
       // Atualiza o estado local imediatamente para feedback instantâneo
       const newAccount = {
         ...data,
-        criado_em: new Date().toISOString(),
-        atualizado_em: new Date().toISOString()
+        criado_em: data.criado_em || new Date().toISOString(),
+        atualizado_em: data.atualizado_em || new Date().toISOString()
       }
 
       setAccounts(prevAccounts => {
-        const updatedAccounts = [...prevAccounts, newAccount]
-        console.log('💳 Adicionando nova conta ao estado local:', account.nome, 'Total anterior:', prevAccounts.length)
-        console.log('💳 Total após adição:', updatedAccounts.length)
-        return updatedAccounts
+        // Verificar se a conta já existe para evitar duplicatas
+        const exists = prevAccounts.some(acc => acc.id === newAccount.id)
+        if (!exists) {
+          const updatedAccounts = [...prevAccounts, newAccount]
+          console.log('💳 ✅ Nova conta adicionada:', account.nome, 'Total:', updatedAccounts.length)
+          return updatedAccounts
+        }
+        console.log('💳 ⚠️ Conta já existe no estado local:', account.nome)
+        return prevAccounts
       })
 
       toast.success('Conta criada com sucesso!')
@@ -111,18 +119,34 @@ export const useAccounts = () => {
     }
   }
 
-  const updateAccount = async (id: string, updates: Partial<Account>) => {
+  const updateAccount = async (id: string, updates: {
+    nome?: string
+    tipo?: 'conta_corrente' | 'poupanca' | 'cartao_credito' | 'dinheiro' | 'investimento'
+    saldo_inicial?: number
+    cor?: string
+    descricao?: string
+    banco?: string
+    bandeira_cartao?: string
+  }) => {
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
     console.log('💳 Iniciando edição da conta:', id, updates)
     setUpdating(true)
     try {
+      // Preparar dados para atualização
+      const updateData: any = {
+        ...updates,
+        atualizado_em: new Date().toISOString()
+      }
+
+      // Se saldo_inicial foi alterado, atualizar também o saldo atual
+      if (updates.saldo_inicial !== undefined) {
+        updateData.saldo = updates.saldo_inicial
+      }
+
       const { data, error } = await supabase
         .from('accounts')
-        .update({
-          ...updates,
-          atualizado_em: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', id)
         .eq('user_id', user.id)
         .select()
@@ -133,10 +157,9 @@ export const useAccounts = () => {
       // Atualiza o estado local imediatamente
       setAccounts(prevAccounts => {
         const updatedAccounts = prevAccounts.map(account =>
-          account.id === id ? { ...account, ...data } : account
+          account.id === id ? { ...account, ...data, atualizado_em: data.atualizado_em || new Date().toISOString() } : account
         )
-        console.log('💳 Conta atualizada no estado local:', data.nome, 'ID:', id)
-        console.log('💳 Contas após atualização:', updatedAccounts.length)
+        console.log('💳 ✅ Conta atualizada:', data.nome, 'ID:', id)
         return updatedAccounts
       })
 
@@ -231,6 +254,79 @@ export const useAccounts = () => {
   useEffect(() => {
     if (user) {
       loadAccounts()
+
+      // Configurar listener para mudanças em tempo real
+      const channel = supabase
+        .channel('accounts-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'accounts',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('💳 Mudança detectada na tabela accounts:', payload)
+            
+            if (payload.eventType === 'INSERT') {
+              const newAccount = payload.new as Account
+              if (newAccount.ativo) {
+                setAccounts(prevAccounts => {
+                  // Verificar se a conta já existe para evitar duplicatas
+                  const exists = prevAccounts.some(acc => acc.id === newAccount.id)
+                  if (!exists) {
+                    console.log('💳 🔄 Nova conta via realtime:', newAccount.nome)
+                    return [...prevAccounts, newAccount].sort((a, b) => 
+                      new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
+                    )
+                  }
+                  console.log('💳 🔄 Conta já existe (realtime):', newAccount.nome)
+                  return prevAccounts
+                })
+              }
+            } else if (payload.eventType === 'UPDATE') {
+              const updatedAccount = payload.new as Account
+              setAccounts(prevAccounts => {
+                if (updatedAccount.ativo) {
+                  // Verificar se a conta existe antes de atualizar
+                  const exists = prevAccounts.some(acc => acc.id === updatedAccount.id)
+                  if (exists) {
+                    const updated = prevAccounts.map(account =>
+                      account.id === updatedAccount.id ? updatedAccount : account
+                    )
+                    console.log('💳 🔄 Conta atualizada via realtime:', updatedAccount.nome)
+                    return updated
+                  } else {
+                    // Adicionar conta se não existe (caso edge)
+                    console.log('💳 🔄 Adicionando conta inexistente via realtime:', updatedAccount.nome)
+                    return [...prevAccounts, updatedAccount].sort((a, b) => 
+                      new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
+                    )
+                  }
+                } else {
+                  // Remover conta se foi desativada
+                  const filtered = prevAccounts.filter(account => account.id !== updatedAccount.id)
+                  console.log('💳 🔄 Conta desativada via realtime:', updatedAccount.nome)
+                  return filtered
+                }
+              })
+            } else if (payload.eventType === 'DELETE') {
+              const deletedAccount = payload.old as Account
+              setAccounts(prevAccounts => {
+                const filtered = prevAccounts.filter(account => account.id !== deletedAccount.id)
+                console.log('💳 🔄 Conta deletada via realtime:', deletedAccount.nome)
+                return filtered
+              })
+            }
+          }
+        )
+        .subscribe()
+
+      // Cleanup function
+      return () => {
+        supabase.removeChannel(channel)
+      }
     }
   }, [user])
 
