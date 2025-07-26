@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { AccountForm } from '../components/accounts/AccountForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
+import { BankLogos, CreditCardLogos } from '../components/accounts/BankLogos'
 
 export const Accounts: React.FC = () => {
   const { accounts, loading, deleteAccount, loadAccounts } = useAccounts()
@@ -27,6 +28,17 @@ export const Accounts: React.FC = () => {
       investimento: 'Investimento'
     }
     return types[type as keyof typeof types] || type
+  }
+
+  const getAccountLogo = (account: any) => {
+    if (account.tipo === 'cartao_credito' && account.bandeira_cartao) {
+      const LogoComponent = CreditCardLogos[account.bandeira_cartao as keyof typeof CreditCardLogos]
+      return LogoComponent ? <LogoComponent /> : null
+    } else if (['conta_corrente', 'poupanca', 'investimento'].includes(account.tipo) && account.banco) {
+      const LogoComponent = BankLogos[account.banco as keyof typeof BankLogos]
+      return LogoComponent ? <LogoComponent /> : null
+    }
+    return null
   }
 
   const handleEdit = (account: any) => {
@@ -140,14 +152,18 @@ export const Accounts: React.FC = () => {
                   <div className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
-                        <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: `${account.cor}20` }}
-                        >
-                          <div
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: account.cor }}
-                          />
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0">
+                          {getAccountLogo(account) || (
+                            <div
+                              className="w-9 h-9 rounded-lg flex items-center justify-center"
+                              style={{ backgroundColor: `${account.cor}20` }}
+                            >
+                              <div
+                                className="w-4 h-4 rounded-full"
+                                style={{ backgroundColor: account.cor }}
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="ml-4 flex-1 min-w-0">
                           <div className="flex items-center justify-between">

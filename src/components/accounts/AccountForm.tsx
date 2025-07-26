@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { X, CreditCard, DollarSign, Palette, ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { useAccounts } from '../../hooks/useAccounts'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import { bankOptions, creditCardOptions } from './BankLogos'
 import toast from 'react-hot-toast'
 
 // Funções para formatação monetária
@@ -45,7 +46,9 @@ const accountSchema = z.object({
   tipo: z.enum(['conta_corrente', 'poupanca', 'cartao_credito', 'dinheiro', 'investimento']),
   saldo_inicial: z.number(),
   cor: z.string().min(1, 'Cor é obrigatória'),
-  descricao: z.string().min(1, 'Descrição é obrigatória')
+  descricao: z.string().min(1, 'Descrição é obrigatória'),
+  banco: z.string().optional(),
+  bandeira_cartao: z.string().optional()
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
@@ -97,6 +100,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       tipo: 'conta_corrente',
       saldo_inicial: 0,
       cor: colors[0],
+      banco: '',
+      bandeira_cartao: '',
       ...initialData
     }
   })
@@ -105,6 +110,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   const watchNome = watch('nome')
   const watchTipo = watch('tipo')
   const watchDescricao = watch('descricao')
+  const watchBanco = watch('banco')
+  const watchBandeiraCartao = watch('bandeira_cartao')
 
   // Inicializar valor formatado quando há dados iniciais
   React.useEffect(() => {
@@ -164,7 +171,16 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
     switch (stepNumber) {
       case 1:
-        return watchNome && watchNome.trim().length > 0 && watchTipo
+        const hasBasicInfo = watchNome && watchNome.trim().length > 0 && watchTipo
+        if (!hasBasicInfo) return false
+        
+        // Validação específica por tipo de conta
+        if (watchTipo === 'cartao_credito') {
+          return watchBandeiraCartao && watchBandeiraCartao.trim().length > 0
+        } else if (['conta_corrente', 'poupanca', 'investimento'].includes(watchTipo)) {
+          return watchBanco && watchBanco.trim().length > 0
+        }
+        return true
       case 2:
         return true // Saldo inicial é opcional
       case 3:
@@ -350,7 +366,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           {...register('tipo')}
                           className="sr-only"
                         />
-                        <div className={`p-1 border-2 rounded-lg cursor-pointer transition-all flex items-center ${watch('tipo') === type.value
+                        <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${watch('tipo') === type.value
                             ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
                             : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
                           }`}>
@@ -361,6 +377,64 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                     ))}
                   </div>
                 </div>
+
+                {/* Seleção de Banco para Conta Corrente, Poupança e Investimento */}
+                {['conta_corrente', 'poupanca', 'investimento'].includes(watchTipo) && (
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Instituição Financeira *
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {bankOptions.map((bank) => (
+                        <label key={bank.value} className="relative">
+                          <input
+                            type="radio"
+                            value={bank.value}
+                            {...register('banco')}
+                            className="sr-only"
+                          />
+                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${
+                            watchBanco === bank.value
+                              ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
+                              : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
+                          }`}>
+                            <bank.logo />
+                            <span className="font-medium text-fg-default dark:text-fg-dark-default ml-3 text-sm">{bank.label}</span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seleção de Bandeira para Cartão de Crédito */}
+                {watchTipo === 'cartao_credito' && (
+                  <div>
+                    <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                      Bandeira do Cartão *
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {creditCardOptions.map((card) => (
+                        <label key={card.value} className="relative">
+                          <input
+                            type="radio"
+                            value={card.value}
+                            {...register('bandeira_cartao')}
+                            className="sr-only"
+                          />
+                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${
+                            watchBandeiraCartao === card.value
+                              ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
+                              : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
+                          }`}>
+                            <card.logo />
+                            <span className="font-medium text-fg-default dark:text-fg-dark-default ml-3 text-sm">{card.label}</span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 

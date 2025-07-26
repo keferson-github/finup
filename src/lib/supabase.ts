@@ -50,6 +50,8 @@ export interface Database {
           cor: string
           descricao: string | null
           ativo: boolean
+          banco: string | null
+          bandeira_cartao: string | null
           criado_em: string
           atualizado_em: string
         }
@@ -62,6 +64,8 @@ export interface Database {
           cor?: string
           descricao?: string | null
           ativo?: boolean
+          banco?: string | null
+          bandeira_cartao?: string | null
         }
         Update: {
           nome?: string
@@ -71,6 +75,8 @@ export interface Database {
           cor?: string
           descricao?: string | null
           ativo?: boolean
+          banco?: string | null
+          bandeira_cartao?: string | null
         }
       }
       categories: {

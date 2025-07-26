@@ -13,6 +13,8 @@ export interface Account {
   cor: string
   descricao: string | null
   ativo: boolean
+  banco?: string | null
+  bandeira_cartao?: string | null
   criado_em: string
   atualizado_em: string
 }
@@ -55,6 +57,8 @@ export const useAccounts = () => {
     saldo_inicial: number
     cor?: string
     description?: string
+    banco?: string
+    bandeira_cartao?: string
   }) => {
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
@@ -67,7 +71,9 @@ export const useAccounts = () => {
           user_id: user.id,
           saldo: account.saldo_inicial,
           descricao: account.description,
-          ativo: true
+          ativo: true,
+          banco: account.banco || null,
+          bandeira_cartao: account.bandeira_cartao || null
         })
         .select()
         .single()
