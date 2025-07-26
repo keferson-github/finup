@@ -106,8 +106,9 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
   }
 
   return (
-    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-0 h-full">
-      <div className="px-6 pt-6 pb-4">
+    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg h-[600px] flex flex-col">
+      {/* Header fixo */}
+      <div className="px-6 pt-6 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Calendar className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted mr-2" />
@@ -165,10 +166,13 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
             </p>
           </div>
         </div>
-        
-        {/* Filtros */}
-        {showFilters && (
-          <div className="mt-4 p-4 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg space-y-4">
+      </div>
+      
+      {/* Área de conteúdo com scroll */}
+      <div className="flex-1 flex flex-col min-h-0">
+        {/* Filtros com altura fixa */}
+        <div className="px-6 flex-shrink-0" style={{ height: showFilters ? '120px' : '0px', overflow: 'hidden', transition: 'height 0.3s ease-in-out' }}>
+          <div className="p-4 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg space-y-4">
             <div className="flex flex-wrap gap-4">
               <div className="flex-1 min-w-[120px]">
                 <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
@@ -200,84 +204,85 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
               </div>
             </div>
           </div>
-        )}
-      </div>
-      
-      <div className="p-6 pt-0">
-        {!filteredData || filteredData.length === 0 ? (
-          <div className="text-center py-8">
-            <Clock className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
-            <p className="text-fg-muted dark:text-fg-dark-muted">Nenhuma transação agendada</p>
-            <p className="text-sm text-fg-muted dark:text-fg-dark-muted mt-2">
-              {periodFilter === '7dias' ? 'Próximos 7 dias' : periodFilter === '15dias' ? 'Próximos 15 dias' : 'Próximos 30 dias'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {displayData.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg hover:bg-gray-100 dark:hover:bg-bg-dark-muted transition-colors">
-                  <div className="flex items-center">
-                    <div 
-                      className="w-10 h-10 rounded-lg flex items-center justify-center mr-4"
-                      style={{ backgroundColor: `${transaction.category?.cor || '#6B7280'}20` }}
-                    >
-                      {transaction.category ? (
-                        <span className="text-lg">{transaction.category.icone}</span>
-                      ) : (
-                        <div 
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: transaction.account?.cor || '#6B7280' }}
-                        />
-                      )}
+        </div>
+        
+        {/* Lista de transações com scroll */}
+        <div className="px-6 pb-6 flex-1 overflow-y-auto">
+          {!filteredData || filteredData.length === 0 ? (
+            <div className="text-center py-8">
+              <Clock className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
+              <p className="text-fg-muted dark:text-fg-dark-muted">Nenhuma transação agendada</p>
+              <p className="text-sm text-fg-muted dark:text-fg-dark-muted mt-2">
+                {periodFilter === '7dias' ? 'Próximos 7 dias' : periodFilter === '15dias' ? 'Próximos 15 dias' : 'Próximos 30 dias'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {displayData.map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg hover:bg-gray-100 dark:hover:bg-bg-dark-muted transition-colors">
+                    <div className="flex items-center">
+                      <div 
+                        className="w-10 h-10 rounded-lg flex items-center justify-center mr-4"
+                        style={{ backgroundColor: `${transaction.category?.cor || '#6B7280'}20` }}
+                      >
+                        {transaction.category ? (
+                          <span className="text-lg">{transaction.category.icone}</span>
+                        ) : (
+                          <div 
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: transaction.account?.cor || '#6B7280' }}
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-fg-default dark:text-fg-dark-default">
+                          {transaction.titulo || 'Transação sem título'}
+                        </p>
+                        <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
+                          {transaction.category?.nome || 'Sem categoria'} • {transaction.account?.nome || 'Conta não informada'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-fg-default dark:text-fg-dark-default">
-                        {transaction.titulo || 'Transação sem título'}
+                    <div className="text-right">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          'bg-attention-subtle dark:bg-attention-dark-subtle text-attention-fg dark:text-attention-dark-fg'
+                        }`}>
+                          Pendente
+                        </span>
+                      </div>
+                      <p className={`font-semibold mt-1 ${
+                        transaction.tipo === 'receita' 
+                          ? 'text-success-fg dark:text-success-dark-fg' 
+                          : 'text-danger-fg dark:text-danger-dark-fg'
+                      }`}>
+                        {transaction.tipo === 'receita' ? '+' : '-'}
+                        {formatCurrency(transaction.valor)}
                       </p>
                       <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                        {transaction.category?.nome || 'Sem categoria'} • {transaction.account?.nome || 'Conta não informada'}
+                        {transaction.data && !isNaN(new Date(transaction.data).getTime()) ? format(new Date(transaction.data), 'd MMM', { locale: ptBR }) : 'Data inválida'}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        'bg-attention-subtle dark:bg-attention-dark-subtle text-attention-fg dark:text-attention-dark-fg'
-                      }`}>
-                        Pendente
-                      </span>
-                    </div>
-                    <p className={`font-semibold mt-1 ${
-                      transaction.tipo === 'receita' 
-                        ? 'text-success-fg dark:text-success-dark-fg' 
-                        : 'text-danger-fg dark:text-danger-dark-fg'
-                    }`}>
-                      {transaction.tipo === 'receita' ? '+' : '-'}
-                      {formatCurrency(transaction.valor)}
-                    </p>
-                    <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                      {transaction.data && !isNaN(new Date(transaction.data).getTime()) ? format(new Date(transaction.data), 'd MMM', { locale: ptBR }) : 'Data inválida'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Botão Mostrar Mais */}
-            {filteredData.length > displayCount && (
-              <div className="mt-4 text-center">
-                <button
-                  onClick={() => setDisplayCount(prev => prev + 10)}
-                  className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-bg-dark-subtle hover:bg-gray-100 dark:hover:bg-bg-dark-muted text-fg-default dark:text-fg-dark-default rounded-lg transition-colors"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Mostrar mais ({filteredData.length - displayCount} restantes)
-                </button>
+                ))}
               </div>
-            )}
-          </>
-        )}
+              
+              {/* Botão Mostrar Mais */}
+              {filteredData.length > displayCount && (
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => setDisplayCount(prev => prev + 10)}
+                    className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-bg-dark-subtle hover:bg-gray-100 dark:hover:bg-bg-dark-muted text-fg-default dark:text-fg-dark-default rounded-lg transition-colors"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Mostrar mais ({filteredData.length - displayCount} restantes)
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
