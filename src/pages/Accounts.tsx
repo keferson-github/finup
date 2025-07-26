@@ -1,12 +1,12 @@
 import React from 'react'
 import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { AccountForm } from '../components/accounts/AccountForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 
 export const Accounts: React.FC = () => {
-  const { accounts, loading, deleteAccount } = useAccounts()
+  const { accounts, loading, deleteAccount, loadAccounts } = useAccounts()
   const [showForm, setShowForm] = useState(false)
   const [editingAccount, setEditingAccount] = useState<any>(null)
   const [showBalances, setShowBalances] = useState(true)
@@ -45,10 +45,16 @@ export const Accounts: React.FC = () => {
     setEditingAccount(null)
   }
 
-  const handleAccountSuccess = () => {
-    // A lista será atualizada automaticamente pelo hook useAccounts
+  const handleAccountSuccess = async () => {
+    // Força o recarregamento da lista de contas
+    await loadAccounts()
     handleCloseForm()
   }
+
+  // Força recarregamento quando o componente é montado
+  useEffect(() => {
+    loadAccounts()
+  }, [])
 
   const totalBalance = accounts.reduce((sum, account) => sum + Number(account.saldo), 0)
 
