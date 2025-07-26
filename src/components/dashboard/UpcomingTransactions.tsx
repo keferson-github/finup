@@ -115,9 +115,10 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-2 rounded-lg bg-bg-subtle dark:bg-bg-dark-subtle hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 text-sm bg-bg-subtle dark:bg-bg-dark-subtle hover:bg-bg-muted dark:hover:bg-bg-dark-muted rounded-lg transition-colors"
           >
-            <Filter className="h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
+            <Filter className="h-4 w-4" />
+            <span>Filtros</span>
           </button>
         </div>
         

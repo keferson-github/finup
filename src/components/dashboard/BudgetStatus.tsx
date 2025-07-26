@@ -138,9 +138,10 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-2 text-fg-muted dark:text-fg-dark-muted hover:text-accent-fg dark:hover:text-accent-dark-fg transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 text-sm bg-bg-subtle dark:bg-bg-dark-subtle hover:bg-bg-muted dark:hover:bg-bg-dark-muted rounded-lg transition-colors"
           >
             <Filter className="h-4 w-4" />
+            <span>Filtros</span>
           </button>
         </div>
       </div>
