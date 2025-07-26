@@ -1,41 +1,53 @@
-import React from 'react'
-
-// Componente para logotipos de bancos usando SVG
+// Componente para logotipos de bancos usando imagens reais
 export const BankLogos = {
   itau: () => (
-    <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center text-white font-bold text-xs">
-      ITAÚ
-    </div>
+    <img 
+      src="/logo-banks/logo-itau.png" 
+      alt="Itaú" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   bradesco: () => (
-    <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      BRAD
-    </div>
+    <img 
+      src="/logo-banks/logo-bradesco.png" 
+      alt="Bradesco" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   nubank: () => (
-    <div className="w-8 h-8 bg-purple-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      NU
-    </div>
+    <img 
+      src="/logo-banks/logo-nubank.png" 
+      alt="Nubank" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   inter: () => (
-    <div className="w-8 h-8 bg-orange-400 rounded flex items-center justify-center text-white font-bold text-xs">
-      INT
-    </div>
+    <img 
+      src="/logo-banks/logo-inter.png" 
+      alt="Inter" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   santander: () => (
-    <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center text-white font-bold text-xs">
-      SAN
-    </div>
+    <img 
+      src="/logo-banks/logo-santander.png" 
+      alt="Santander" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   bb: () => (
-    <div className="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center text-black font-bold text-xs">
-      BB
-    </div>
+    <img 
+      src="/logo-banks/logo-banco-do-brasil.png" 
+      alt="Banco do Brasil" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   caixa: () => (
-    <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      CEF
-    </div>
+    <img 
+      src="/logo-banks/logo-caixa-economica-federal.png" 
+      alt="Caixa Econômica Federal" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   other: () => (
     <div className="w-8 h-8 bg-gray-500 rounded flex items-center justify-center text-white font-bold text-xs">
@@ -44,32 +56,42 @@ export const BankLogos = {
   )
 }
 
-// Componente para bandeiras de cartão de crédito
+// Componente para bandeiras de cartão de crédito usando imagens reais
 export const CreditCardLogos = {
   visa: () => (
-    <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      VISA
-    </div>
+    <img 
+      src="/logo-credits/logo-visa.png" 
+      alt="Visa" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   mastercard: () => (
-    <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center text-white font-bold text-xs">
-      MAST
-    </div>
+    <img 
+      src="/logo-credits/logo-mastercard.png" 
+      alt="Mastercard" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   elo: () => (
-    <div className="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center text-black font-bold text-xs">
-      ELO
-    </div>
+    <img 
+      src="/logo-credits/logo-elo.png" 
+      alt="Elo" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   amex: () => (
-    <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      AMEX
-    </div>
+    <img 
+      src="/logo-credits/logo-amex.png" 
+      alt="American Express" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   hipercard: () => (
-    <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white font-bold text-xs">
-      HIP
-    </div>
+    <img 
+      src="/logo-credits/logo-hipercard.png" 
+      alt="Hipercard" 
+      className="w-8 h-8 object-contain rounded"
+    />
   ),
   other: () => (
     <div className="w-8 h-8 bg-gray-500 rounded flex items-center justify-center text-white font-bold text-xs">
