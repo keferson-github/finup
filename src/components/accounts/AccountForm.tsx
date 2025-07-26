@@ -45,7 +45,7 @@ const accountSchema = z.object({
   tipo: z.enum(['conta_corrente', 'poupanca', 'cartao_credito', 'dinheiro', 'investimento']),
   saldo_inicial: z.number(),
   cor: z.string().min(1, 'Cor é obrigatória'),
-  descricao: z.string().optional()
+  descricao: z.string().min(1, 'Descrição é obrigatória')
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
@@ -104,6 +104,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   const watchColor = watch('cor')
   const watchNome = watch('nome')
   const watchTipo = watch('tipo')
+  const watchDescricao = watch('descricao')
 
   // Inicializar valor formatado quando há dados iniciais
   React.useEffect(() => {
@@ -167,7 +168,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       case 2:
         return true // Saldo inicial é opcional
       case 3:
-        return watchColor && watchColor.trim().length > 0
+        return watchColor && watchColor.trim().length > 0 && watchDescricao && watchDescricao.trim().length > 0
       default:
         return false
     }
@@ -201,6 +202,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     // Verifica se a cor foi selecionada
     if (!data.cor) {
       toast.error('Por favor, selecione uma cor para a conta')
+      return
+    }
+    
+    // Verifica se a descrição foi preenchida
+    if (!data.descricao || data.descricao.trim().length === 0) {
+      toast.error('Por favor, adicione uma descrição para a conta')
       return
     }
     
@@ -426,14 +433,17 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                    Descrição
+                    Descrição *
                   </label>
                   <textarea
                     {...register('descricao')}
                     rows={3}
                     className="input resize-none"
-                    placeholder="Descrição opcional da conta..."
+                    placeholder="Adicione uma descrição para a conta..."
                   />
+                  {errors.descricao && (
+                    <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">{errors.descricao.message}</p>
+                  )}
                   <p className="mt-1 text-sm text-fg-muted dark:text-fg-dark-muted">
                     Adicione uma descrição para lembrar detalhes importantes sobre esta conta.
                   </p>
