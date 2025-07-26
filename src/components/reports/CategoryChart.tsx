@@ -31,7 +31,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({
       if (!data) return null
       
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+        <div className="bg-white p-3 border border-gray-200 rounded-lg">
           <div className="flex items-center mb-2">
             <span className="text-lg mr-2">{data.icone || '📁'}</span>
             <span className="font-medium">{data.categoria || 'Categoria sem nome'}</span>

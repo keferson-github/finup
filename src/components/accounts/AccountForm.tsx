@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { X, CreditCard, DollarSign, Palette, ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { useAccounts } from '../../hooks/useAccounts'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
+import toast from 'react-hot-toast'
 
 // Funções para formatação monetária
 const formatCurrency = (value: number): string => {
@@ -110,6 +111,19 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       setFormattedBalance(formatCurrency(initialData.saldo_inicial))
     }
   }, [initialData])
+  
+  // Controlar o overflow do body quando o modal estiver aberto
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   // Handler para mudança no input de saldo
   const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +167,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       case 2:
         return true // Saldo inicial é opcional
       case 3:
-        return watchColor
+        return watchColor && watchColor.trim().length > 0
       default:
         return false
     }
@@ -184,12 +198,22 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       return
     }
     
+    // Verifica se a cor foi selecionada
+    if (!data.cor) {
+      toast.error('Por favor, selecione uma cor para a conta')
+      return
+    }
+    
     setIsSubmitting(true)
     
     try {
       const result = mode === 'create' 
-        ? await createAccount(data)
-        : await updateAccount(initialData?.id as string, data)
+        ? await createAccount({
+            ...data
+          })
+        : await updateAccount(initialData?.id as string, {
+            ...data
+          })
       
       if (result.success) {
         setCurrentStep(1)
@@ -213,8 +237,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
   const currentStepData = steps.find(s => s.id === currentStep)
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 pt-20">
-        <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[75vh] sm:max-h-[65vh] md:max-h-[75vh] border border-border-default dark:border-border-dark-default flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
+        <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[75vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-20">
         {/* Fixed Header */}
         <div className="p-4 sm:p-5 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
@@ -283,7 +307,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         </div>
 
         {/* Scrollable Form Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <form id="account-form" onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-5 space-y-3 sm:space-y-4 pb-0" noValidate>
             
             {/* Step 1: Informações Básicas */}
@@ -378,13 +402,23 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           type="button"
                           onClick={() => setValue('cor', color)}
                           className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110' : 'border-border-default dark:border-border-dark-default'
+                            watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110 ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : 'border-border-default dark:border-border-dark-default'
                           }`}
                           style={{ backgroundColor: color }}
-                        />
+                          aria-label={`Selecionar cor ${color}`}
+                        >
+                          {watchColor === color && (
+                            <Check className="h-4 w-4 text-white mx-auto" />
+                          )}
+                        </button>
                       ))}
                     </div>
                   </div>
+                  {!watchColor && currentStep === 3 && (
+                    <p className="mt-1 text-sm text-danger-fg dark:text-danger-dark-fg">
+                      Por favor, selecione uma cor para continuar
+                    </p>
+                  )}
                   <p className="mt-1 text-sm text-fg-muted dark:text-fg-dark-muted">
                     Escolha uma cor para identificar facilmente esta conta.
                   </p>
@@ -450,6 +484,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 form="account-form"
                 disabled={isSubmitting || (mode === 'create' && (!isStepValid(currentStep) || currentStep < totalSteps))}
                 className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                title={!isStepValid(currentStep) ? 'Preencha todos os campos obrigatórios' : ''}
               >
                 {isSubmitting && <LoadingSpinner size="sm" className="mr-2" />}
                 {mode === 'create' ? 'Criar Conta' : 'Atualizar Conta'}

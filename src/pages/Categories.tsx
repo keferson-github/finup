@@ -45,7 +45,7 @@ export const Categories: React.FC = () => {
   }
 
   const CategoryCard = ({ category }: { category: any }) => (
-    <div className="card p-3 hover:shadow-md transition-shadow">
+    <div className="card p-3 transition-colors">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div 

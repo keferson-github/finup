@@ -78,14 +78,14 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
 
   if (loading) {
     return (
-      <div className="card p-0 h-full">
+      <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-0 h-full">
         <div className="px-6 pt-6 pb-4">
           <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Próximas Transações</h3>
         </div>
         <div className="p-6 pt-0">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center justify-between p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg">
+              <div key={i} className="animate-pulse flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg">
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-neutral-muted dark:bg-neutral-dark-muted rounded-lg mr-4"></div>
                   <div>
@@ -106,7 +106,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
   }
 
   return (
-    <div className="card p-0 h-full" style={{ backgroundColor: '#0D1117' }}>
+    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-0 h-full">
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -115,7 +115,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="p-2 rounded-lg bg-canvas-subtle dark:bg-canvas-dark-subtle hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted transition-colors"
+            className="p-2 rounded-lg bg-bg-subtle dark:bg-bg-dark-subtle hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted transition-colors"
           >
             <Filter className="h-4 w-4 text-fg-muted dark:text-fg-dark-muted" />
           </button>
@@ -123,7 +123,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
         
         {/* Filtros */}
         {showFilters && (
-          <div className="mt-4 p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg space-y-4">
+          <div className="mt-4 p-4 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg space-y-4">
             <div className="flex flex-wrap gap-4">
               <div className="flex-1 min-w-[120px]">
                 <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
@@ -132,7 +132,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value as FilterType)}
-                  className="w-full px-3 py-2 bg-canvas-default dark:bg-canvas-dark-default border border-border-default dark:border-border-dark-default rounded-lg text-fg-default dark:text-fg-dark-default"
+                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
                 >
                   <option value="todos">Todos</option>
                   <option value="receita">Receitas</option>
@@ -146,7 +146,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
                 <select
                   value={periodFilter}
                   onChange={(e) => setPeriodFilter(e.target.value as PeriodFilter)}
-                  className="w-full px-3 py-2 bg-canvas-default dark:bg-canvas-dark-default border border-border-default dark:border-border-dark-default rounded-lg text-fg-default dark:text-fg-dark-default"
+                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
                 >
                   <option value="7dias">Próximos 7 dias</option>
                   <option value="15dias">Próximos 15 dias</option>
@@ -159,7 +159,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
         
         {/* Estatísticas Rápidas */}
         <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-canvas-subtle dark:bg-canvas-dark-subtle p-3 rounded-lg">
+          <div className="bg-bg-subtle dark:bg-bg-dark-subtle p-3 rounded-lg">
             <div className="flex items-center">
               <Calendar className="h-4 w-4 text-fg-muted dark:text-fg-dark-muted mr-2" />
               <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Total</span>
@@ -168,7 +168,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
               {statistics.totalTransactions}
             </p>
           </div>
-          <div className="bg-canvas-subtle dark:bg-canvas-dark-subtle p-3 rounded-lg">
+          <div className="bg-bg-subtle dark:bg-bg-dark-subtle p-3 rounded-lg">
             <div className="flex items-center">
               <TrendingUp className="h-4 w-4 text-success-fg dark:text-success-dark-fg mr-2" />
               <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Receitas</span>
@@ -177,7 +177,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
               {formatCurrency(statistics.totalReceitas)}
             </p>
           </div>
-          <div className="bg-canvas-subtle dark:bg-canvas-dark-subtle p-3 rounded-lg">
+          <div className="bg-bg-subtle dark:bg-bg-dark-subtle p-3 rounded-lg">
             <div className="flex items-center">
               <TrendingDown className="h-4 w-4 text-danger-fg dark:text-danger-dark-fg mr-2" />
               <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Despesas</span>
@@ -186,7 +186,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
               {formatCurrency(statistics.totalDespesas)}
             </p>
           </div>
-          <div className="bg-canvas-subtle dark:bg-canvas-dark-subtle p-3 rounded-lg">
+          <div className="bg-bg-subtle dark:bg-bg-dark-subtle p-3 rounded-lg">
             <div className="flex items-center">
               <CheckCircle className="h-4 w-4 text-fg-muted dark:text-fg-dark-muted mr-2" />
               <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Saldo</span>
@@ -215,7 +215,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
           <>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {displayData.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted transition-colors">
+                <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg hover:bg-gray-100 dark:hover:bg-bg-dark-muted transition-colors">
                   <div className="flex items-center">
                     <div 
                       className="w-10 h-10 rounded-lg flex items-center justify-center mr-4"
@@ -268,7 +268,7 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
               <div className="mt-4 text-center">
                 <button
                   onClick={() => setDisplayCount(prev => prev + 10)}
-                  className="inline-flex items-center px-4 py-2 bg-canvas-subtle dark:bg-canvas-dark-subtle hover:bg-neutral-muted dark:hover:bg-neutral-dark-muted text-fg-default dark:text-fg-dark-default rounded-lg transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-bg-dark-subtle hover:bg-gray-100 dark:hover:bg-bg-dark-muted text-fg-default dark:text-fg-dark-default rounded-lg transition-colors"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Mostrar mais ({filteredData.length - displayCount} restantes)

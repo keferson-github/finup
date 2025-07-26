@@ -108,8 +108,8 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
 
   if (loading) {
     return (
-      <div className="card" style={{ backgroundColor: '#0D1117' }}>
-        <div className="card-header">
+      <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg">
+        <div className="p-4 border-b border-border-default dark:border-border-dark-default">
           <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Status dos Orçamentos</h3>
         </div>
         <div className="space-y-4">
@@ -129,8 +129,8 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
   }
 
   return (
-    <div className="card" style={{ backgroundColor: '#0D1117' }}>
-      <div className="card-header">
+    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg">
+      <div className="p-4 border-b border-border-default dark:border-border-dark-default">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Target className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted mr-2" />
@@ -156,7 +156,7 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                className="w-full px-3 py-2 border border-border-default dark:border-border-dark-default rounded-md bg-canvas-default dark:bg-canvas-dark-default text-fg-default dark:text-fg-dark-default"
+                className="w-full px-3 py-2 border border-border-default dark:border-border-dark-default rounded-md bg-bg-default dark:bg-bg-dark-default text-fg-default dark:text-fg-dark-default"
               >
                 <option value="todos">Todos os Status</option>
                 <option value="ok">✅ No Limite</option>
@@ -171,7 +171,7 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortBy)}
-                className="w-full px-3 py-2 border border-border-default dark:border-border-dark-default rounded-md bg-canvas-default dark:bg-canvas-dark-default text-fg-default dark:text-fg-dark-default"
+                className="w-full px-3 py-2 border border-border-default dark:border-border-dark-default rounded-md bg-bg-default dark:bg-bg-dark-default text-fg-default dark:text-fg-dark-default"
               >
                 <option value="progresso">Progresso (%)</option>
                 <option value="nome">Nome</option>
@@ -247,7 +247,7 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
         <>
           <div className="space-y-4 p-4">
             {displayData.map((budget) => (
-              <div key={budget.id} className="p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg hover:bg-canvas-inset dark:hover:bg-canvas-dark-inset transition-colors">
+              <div key={budget.id} className="p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg hover:bg-gray-100 dark:hover:bg-bg-dark-muted transition-colors">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${getStatusColor(budget.status)}`}>
@@ -303,7 +303,7 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
             <div className="p-4 border-t border-border-default dark:border-border-dark-default">
               <button
                 onClick={() => setDisplayCount(prev => prev + 5)}
-                className="w-full flex items-center justify-center py-2 px-4 text-sm font-medium text-accent-fg dark:text-accent-dark-fg hover:bg-accent-subtle dark:hover:bg-accent-dark-subtle rounded-md transition-colors"
+                className="w-full flex items-center justify-center py-2 px-4 text-sm font-medium text-accent-fg dark:text-accent-dark-fg hover:bg-gray-50 dark:hover:bg-bg-dark-subtle rounded-md transition-colors"
               >
                 <ChevronDown className="h-4 w-4 mr-1" />
                 Mostrar Mais ({filteredData.length - displayCount} restantes)
@@ -313,7 +313,7 @@ export const BudgetStatus: React.FC<BudgetStatusProps> = ({ data, loading }) => 
 
           {/* Resumo dos Valores */}
           {data.length > 0 && (
-            <div className="p-4 border-t border-border-default dark:border-border-dark-default bg-canvas-inset dark:bg-canvas-dark-inset">
+            <div className="p-4 border-t border-border-default dark:border-border-dark-default bg-gray-50 dark:bg-bg-dark-subtle">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-fg-muted dark:text-fg-dark-muted">Total Orçado:</span>

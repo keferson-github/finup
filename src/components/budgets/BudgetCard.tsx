@@ -83,7 +83,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
 
   return (
     <div 
-      className="card hover:shadow-md transition-shadow"
+      className="card transition-colors"
       style={{
         transform: 'translateZ(0)',
         willChange: 'box-shadow',

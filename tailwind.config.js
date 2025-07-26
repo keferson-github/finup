@@ -198,6 +198,17 @@ export default {
           muted: 'rgba(248,81,73,0.4)',
           subtle: 'rgba(248,81,73,0.15)',
         },
+        // Background colors
+        bg: {
+          default: '#ffffff',
+          subtle: '#f6f8fa',
+          muted: '#eaeef2',
+        },
+        'bg-dark': {
+          default: '#0d1117',
+          subtle: '#21262d',
+          muted: '#30363d',
+        },
       },
       fontFamily: {
         sans: [

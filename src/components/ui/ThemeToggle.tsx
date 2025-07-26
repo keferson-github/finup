@@ -19,7 +19,7 @@ export const ThemeToggle: React.FC = () => {
           onClick={() => setTheme(value)}
           className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
             theme === value
-              ? 'bg-canvas-default dark:bg-canvas-dark-default text-fg-default dark:text-fg-dark-default shadow-sm'
+              ? 'bg-canvas-default dark:bg-canvas-dark-default text-fg-default dark:text-fg-dark-default'
               : 'text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default'
           }`}
           title={`Switch to ${label.toLowerCase()} theme`}

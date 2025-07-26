@@ -23,7 +23,7 @@ export const CategoryChart: React.FC<CategoryChartProps> = ({ data, loading }) =
       if (!data) return null
       
       return (
-        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-3 border border-border-default dark:border-border-dark-default rounded-lg shadow-lg">
+        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-3 border border-border-default dark:border-border-dark-default rounded-lg">
           <div className="flex items-center mb-2">
             <span className="text-lg mr-2">{data.icone || '📁'}</span>
             <span className="font-medium text-fg-default dark:text-fg-dark-default">{data.categoria || 'Categoria sem nome'}</span>

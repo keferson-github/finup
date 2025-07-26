@@ -20,7 +20,7 @@ export const AccountReport: React.FC<AccountReportProps> = ({ data, loading }) =
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-3 border border-border-default dark:border-border-dark-default rounded-lg shadow-lg">
+        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-3 border border-border-default dark:border-border-dark-default rounded-lg">
           <p className="font-medium text-fg-default dark:text-fg-dark-default mb-2">{data.conta}</p>
           <div className="space-y-1">
             <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
@@ -125,7 +125,7 @@ export const AccountReport: React.FC<AccountReportProps> = ({ data, loading }) =
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value: number, name: string, props: any) => [
+                  formatter={(_: number, __: string, props: any) => [
                     formatCurrency(props.payload.originalValue), 
                     'Saldo'
                   ]} 

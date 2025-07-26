@@ -65,14 +65,14 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
   if (loading) {
     return (
-      <div className="card p-0">
+    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-0">
         <div className="px-6 pt-6 pb-4">
           <h3 className="text-lg font-semibold text-fg-default dark:text-fg-dark-default">Transações Recentes</h3>
         </div>
         <div className="p-6">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center justify-between p-4 bg-canvas-subtle dark:bg-canvas-dark-subtle rounded-lg">
+              <div key={i} className="animate-pulse flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg">
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-neutral-muted dark:bg-neutral-dark-muted rounded-lg mr-4"></div>
                   <div>
@@ -93,7 +93,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   }
 
   return (
-    <div className="bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-6" style={{ backgroundColor: '#0D1117' }}>
+    <div className="bg-white dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg p-6">
       {/* Cabeçalho com título e filtros */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -164,7 +164,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as FilterType)}
-                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg text-fg-default dark:text-fg-dark-default"
+                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
               >
                 <option value="all">Todas</option>
                 <option value="receita">Receitas</option>
@@ -178,7 +178,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg text-fg-default dark:text-fg-dark-default"
+                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
               >
                 <option value="all">Todos</option>
                 <option value="pago">Pagas</option>
@@ -193,7 +193,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
               <select
                 value={displayCount}
                 onChange={(e) => setDisplayCount(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-lg text-fg-default dark:text-fg-dark-default"
+                className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
               >
                 <option value={5}>5 transações</option>
                 <option value={10}>10 transações</option>
@@ -207,7 +207,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
       
       {filteredData.length === 0 ? (
         <div className="text-center py-8">
-          <CreditCard className="h-12 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
+          <CreditCard className="h-20 w-12 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
           <p className="text-fg-muted dark:text-fg-dark-muted">
             {data.length === 0 ? 'Nenhuma transação recente' : 'Nenhuma transação encontrada com os filtros aplicados'}
           </p>
@@ -218,7 +218,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
             {displayData.map((transaction) => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between p-3 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg hover:bg-bg-muted dark:hover:bg-bg-dark-muted transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-bg-dark-subtle rounded-lg hover:bg-gray-100 dark:hover:bg-bg-dark-muted transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center justify-center h-10 w-10 rounded-full bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default">
@@ -266,7 +266,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
             <div className="mt-4 text-center">
               <button
                 onClick={() => setDisplayCount(prev => Math.min(prev + 10, filteredData.length))}
-                className="flex items-center space-x-2 mx-auto px-4 py-2 text-sm bg-bg-subtle dark:bg-bg-dark-subtle hover:bg-bg-muted dark:hover:bg-bg-dark-muted rounded-lg transition-colors"
+                className="w-full flex items-center justify-center py-2 px-4 text-sm font-medium text-accent-fg dark:text-accent-dark-fg hover:bg-gray-50 dark:hover:bg-bg-dark-subtle rounded-md transition-colors"
               >
                 <Eye className="h-4 w-4" />
                 <span>Mostrar mais ({filteredData.length - displayCount} restantes)</span>

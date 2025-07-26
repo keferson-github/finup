@@ -87,7 +87,7 @@ export const Accounts: React.FC = () => {
 
       {/* Resumo Total */}
       {accounts.length > 0 && (
-        <div className="bg-gradient-to-r from-blue-500 to-emerald-500 rounded-xl shadow-sm p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-blue-500 to-emerald-500 rounded-xl p-6 mb-8 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm">Saldo Total</p>

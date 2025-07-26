@@ -80,7 +80,7 @@ function App() {
             position="top-right"
             toastOptions={{
               duration: 4000,
-              className: 'shadow-lg font-medium',
+              className: 'font-medium',
               style: {
               backgroundColor: '#0D1117',
               color: '#FAFAFA',

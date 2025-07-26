@@ -104,7 +104,8 @@
   }
   
   /* Optimize shadow transitions */
-  .hover\:shadow-md {
+  /* Removed shadow-md hover effect */
+.hover\:shadow-md-removed {
     will-change: box-shadow;
     contain: layout;
   }
@@ -133,7 +134,7 @@
     @apply bg-success-emphasis dark:bg-success-dark-emphasis text-white;
     @apply hover:bg-success-fg dark:hover:bg-success-dark-fg;
     @apply border border-success-emphasis dark:border-success-dark-emphasis;
-    @apply shadow-sm px-4 py-2;
+    @apply px-4 py-2;
   }
   
   .btn-secondary {
@@ -141,14 +142,14 @@
     @apply text-fg-default dark:text-fg-dark-default;
     @apply border border-border-default dark:border-border-dark-default;
     @apply hover:bg-canvas-subtle dark:hover:bg-canvas-dark-subtle;
-    @apply shadow-sm px-4 py-2;
+    @apply px-4 py-2;
   }
   
   .btn-danger {
     @apply bg-danger-emphasis dark:bg-danger-dark-emphasis text-white;
     @apply hover:bg-danger-fg dark:hover:bg-danger-dark-fg;
     @apply border border-danger-emphasis dark:border-danger-dark-emphasis;
-    @apply shadow-sm px-4 py-2;
+    @apply px-4 py-2;
   }
   
   .btn-ghost {
@@ -180,7 +181,7 @@
   .card {
     @apply bg-canvas-default dark:bg-canvas-dark-default;
     @apply border border-border-default dark:border-border-dark-default;
-    @apply rounded-lg shadow-sm;
+    @apply rounded-lg;
     @apply p-6;
   }
   
@@ -283,22 +284,22 @@
 
   /* Toast Notifications - GitHub Theme */
   .toast-success {
-    @apply bg-[#dafbe1] text-[#1a7f37] border border-[#2da44e]/30 shadow-lg rounded-lg;
+    @apply bg-[#dafbe1] text-[#1a7f37] border border-[#2da44e]/30 rounded-lg;
     @apply dark:bg-[#033a16] dark:text-[#3fb950] dark:border-[#2ea043]/50;
   }
 
   .toast-error {
-    @apply bg-[#ffebe9] text-[#cf222e] border border-[#cf222e]/30 shadow-lg rounded-lg;
+    @apply bg-[#ffebe9] text-[#cf222e] border border-[#cf222e]/30 rounded-lg;
     @apply dark:bg-[#490202] dark:text-[#f85149] dark:border-[#da3633]/50;
   }
 
   .toast-loading {
-    @apply bg-[#ddf4ff] text-[#0969da] border border-[#0969da]/30 shadow-lg rounded-lg;
+    @apply bg-[#ddf4ff] text-[#0969da] border border-[#0969da]/30 rounded-lg;
     @apply dark:bg-[#0c2d6b] dark:text-[#79c0ff] dark:border-[#1f6feb]/50;
   }
 
   .toast-warning {
-    @apply bg-[#fff8c5] text-[#9a6700] border border-[#d1242f]/30 shadow-lg rounded-lg;
+    @apply bg-[#fff8c5] text-[#9a6700] border border-[#d1242f]/30 rounded-lg;
     @apply dark:bg-[#341a00] dark:text-[#f2cc60] dark:border-[#9e6a03]/50;
   }
 }

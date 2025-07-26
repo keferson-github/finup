@@ -107,14 +107,19 @@ export const ReportsCharts: React.FC = () => {
       const categoryExpenses = categoryData?.reduce((acc: any[], transaction) => {
         if (!transaction.categories) return acc
         
-        const existing = acc.find(item => item.name === transaction.categories.nome)
+        // Get the first category from the array if it exists
+        const category = Array.isArray(transaction.categories) && transaction.categories.length > 0 
+          ? transaction.categories[0] 
+          : { nome: 'Sem categoria', cor: '#CCCCCC' }
+        
+        const existing = acc.find(item => item.name === category.nome)
         if (existing) {
           existing.value += Number(transaction.valor)
         } else {
           acc.push({
-            name: transaction.categories.nome,
+            name: category.nome,
             value: Number(transaction.valor),
-            color: transaction.categories.cor
+            color: category.cor
           })
         }
         return acc
@@ -178,7 +183,7 @@ export const ReportsCharts: React.FC = () => {
       </div>
 
       {/* Fluxo de Caixa Mensal */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Fluxo de Caixa Mensal</h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -198,7 +203,7 @@ export const ReportsCharts: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Gastos por Categoria */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">Gastos por Categoria (3 meses)</h3>
           {chartData.categoryExpenses.length > 0 ? (
             <div className="h-80">
@@ -230,7 +235,7 @@ export const ReportsCharts: React.FC = () => {
         </div>
 
         {/* Saldo por Conta */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">Saldo por Conta</h3>
           {chartData.accountBalances.length > 0 ? (
             <div className="h-80">
@@ -253,7 +258,7 @@ export const ReportsCharts: React.FC = () => {
       </div>
 
       {/* Evolução do Patrimônio */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Evolução Patrimonial</h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">

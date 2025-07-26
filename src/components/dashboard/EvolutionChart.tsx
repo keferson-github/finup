@@ -56,7 +56,7 @@ export const EvolutionChart: React.FC<EvolutionChartProps> = ({ data, loading })
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-4 border border-border-default dark:border-border-dark-default rounded-lg shadow-lg">
+        <div className="bg-canvas-overlay dark:bg-canvas-dark-overlay p-4 border border-border-default dark:border-border-dark-default rounded-lg">
           <p className="font-medium text-fg-default dark:text-fg-dark-default mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center justify-between mb-1">
