@@ -84,7 +84,7 @@ export const Accounts: React.FC = () => {
                 {showBalances ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                 {showBalances ? 'Ocultar Saldos' : 'Mostrar Saldos'}
               </button>
-              <button 
+              <button
                 onClick={() => setShowForm(true)}
                 className="btn btn-primary flex items-center"
               >
@@ -116,7 +116,7 @@ export const Accounts: React.FC = () => {
 
       {/* Conteúdo Rolável - Apenas Lista de Contas */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-8 pt-6">
+        <div className="p-6 pt-4">
 
           {accounts.length === 0 ? (
             <div className="card">
@@ -124,7 +124,7 @@ export const Accounts: React.FC = () => {
                 <CreditCard className="h-16 w-16 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma conta encontrada</h3>
                 <p className="text-fg-muted dark:text-fg-dark-muted mb-6">Adicione sua primeira conta para começar a gerenciar suas finanças.</p>
-                <button 
+                <button
                   onClick={() => setShowForm(true)}
                   className="btn btn-primary flex items-center mx-auto"
                 >
@@ -134,34 +134,39 @@ export const Accounts: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="card">
-              <div className="divide-y divide-border-default dark:divide-border-dark-default">
-                {accounts.map((account) => (
-                  <div key={account.id} className="p-4 hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors">
+            <div className="space-y-3">
+              {accounts.map((account) => (
+                <div key={account.id} className="card hover:shadow-md transition-all duration-200">
+                  <div className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
-                        <div 
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${account.cor}20` }}
                         >
-                          <div 
-                            className="w-5 h-5 rounded-full"
+                          <div
+                            className="w-4 h-4 rounded-full"
                             style={{ backgroundColor: account.cor }}
                           />
                         </div>
                         <div className="ml-4 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default truncate">{account.nome}</h3>
-                              <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{getAccountTypeLabel(account.tipo)}</p>
+                              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default truncate">
+                                {account.nome}
+                              </h3>
+                              <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
+                                {getAccountTypeLabel(account.tipo)}
+                              </p>
                               {account.descricao && (
-                                <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1 truncate">{account.descricao}</p>
+                                <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1 truncate">
+                                  {account.descricao}
+                                </p>
                               )}
                             </div>
                             <div className="ml-4 text-right flex-shrink-0">
-                              <span className={`text-lg font-bold ${
-                                Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
-                              }`}>
+                              <span className={`text-lg font-bold ${Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+                                }`}>
                                 {showBalances ? formatCurrency(Number(account.saldo)) : '••••••'}
                               </span>
                               <p className="text-xs text-fg-muted dark:text-fg-dark-muted">Saldo Atual</p>
@@ -187,8 +192,8 @@ export const Accounts: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -25,13 +25,13 @@ const parseCurrency = (value: string): number => {
 const formatInputCurrency = (value: string): string => {
   // Remove tudo exceto números
   const numbers = value.replace(/\D/g, '')
-  
+
   if (!numbers) return ''
-  
+
   // Converte para centavos
   const cents = parseInt(numbers)
   const reais = cents / 100
-  
+
   // Formata como moeda brasileira
   return new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: 2,
@@ -112,7 +112,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       setFormattedBalance(formatCurrency(initialData.saldo_inicial))
     }
   }, [initialData])
-  
+
   // Controlar o overflow do body quando o modal estiver aberto
   React.useEffect(() => {
     if (isOpen) {
@@ -120,7 +120,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     } else {
       document.body.style.overflow = ''
     }
-    
+
     return () => {
       document.body.style.overflow = ''
     }
@@ -131,7 +131,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     const inputValue = e.target.value
     const formatted = formatInputCurrency(inputValue)
     setFormattedBalance(formatted)
-    
+
     // Converte o valor formatado para número e atualiza o form
     const numericValue = parseCurrency(formatted)
     setValue('saldo_inicial', numericValue)
@@ -198,30 +198,30 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     if (mode === 'create' && currentStep < totalSteps) {
       return
     }
-    
+
     // Verifica se a cor foi selecionada
     if (!data.cor) {
       toast.error('Por favor, selecione uma cor para a conta')
       return
     }
-    
+
     // Verifica se a descrição foi preenchida
     if (!data.descricao || data.descricao.trim().length === 0) {
       toast.error('Por favor, adicione uma descrição para a conta')
       return
     }
-    
+
     setIsSubmitting(true)
-    
+
     try {
-      const result = mode === 'create' 
+      const result = mode === 'create'
         ? await createAccount({
-            ...data
-          })
+          ...data
+        })
         : await updateAccount(initialData?.id as string, {
-            ...data
-          })
-      
+          ...data
+        })
+
       if (result.success) {
         setCurrentStep(1)
         setFormattedBalance('')
@@ -245,7 +245,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
-        <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[75vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-50">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[75vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-50">
         {/* Fixed Header */}
         <div className="p-4 sm:p-5 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
@@ -259,7 +259,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               <X className="h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
             </button>
           </div>
-          
+
           {/* Progress Indicator */}
           {mode === 'create' && (
             <div className="space-y-2">
@@ -271,24 +271,23 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                   {Math.round((currentStep / totalSteps) * 100)}%
                 </span>
               </div>
-              
+
               <div className="w-full bg-neutral-muted dark:bg-neutral-dark-muted rounded-full h-1.5">
-                <div 
+                <div
                   className="bg-accent-emphasis dark:bg-accent-dark-emphasis h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${(currentStep / totalSteps) * 100}%` }}
                 />
               </div>
-              
+
               <div className="flex justify-between">
                 {steps.map((step) => (
                   <div key={step.id} className="flex items-center">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all ${
-                      step.id < currentStep 
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all ${step.id < currentStep
                         ? 'bg-success-emphasis dark:bg-success-dark-emphasis text-white'
                         : step.id === currentStep
-                        ? 'bg-accent-emphasis dark:bg-accent-dark-emphasis text-white'
-                        : 'bg-neutral-muted dark:bg-neutral-dark-muted text-fg-muted dark:text-fg-dark-muted'
-                    }`}>
+                          ? 'bg-accent-emphasis dark:bg-accent-dark-emphasis text-white'
+                          : 'bg-neutral-muted dark:bg-neutral-dark-muted text-fg-muted dark:text-fg-dark-muted'
+                      }`}>
                       {step.id < currentStep ? (
                         <Check className="h-3 w-3" />
                       ) : (
@@ -298,7 +297,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                   </div>
                 ))}
               </div>
-              
+
               {currentStepData && (
                 <div className="text-center">
                   <h3 className="font-medium text-fg-default dark:text-fg-dark-default text-sm">
@@ -316,7 +315,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <form id="account-form" onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-5 space-y-3 sm:space-y-4 pb-0" noValidate>
-            
+
             {/* Step 1: Informações Básicas */}
             {(currentStep === 1 || mode === 'edit') && (
               <>
@@ -351,11 +350,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           {...register('tipo')}
                           className="sr-only"
                         />
-                        <div className={`p-1 border-2 rounded-lg cursor-pointer transition-all flex items-center ${
-                          watch('tipo') === type.value
+                        <div className={`p-1 border-2 rounded-lg cursor-pointer transition-all flex items-center ${watch('tipo') === type.value
                             ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
                             : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
-                        }`}>
+                          }`}>
                           <span className="text-xl mr-3">{type.icon}</span>
                           <span className="font-medium text-fg-default dark:text-fg-dark-default">{type.label}</span>
                         </div>
@@ -408,9 +406,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           key={color}
                           type="button"
                           onClick={() => setValue('cor', color)}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110 ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : 'border-border-default dark:border-border-dark-default'
-                          }`}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110 ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : 'border-border-default dark:border-border-dark-default'
+                            }`}
                           style={{ backgroundColor: color }}
                           aria-label={`Selecionar cor ${color}`}
                         >
@@ -464,7 +461,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
             >
               Cancelar
             </button>
-            
+
             {mode === 'create' && currentStep > 1 && (
               <button
                 type="button"
@@ -476,7 +473,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               </button>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {mode === 'create' && currentStep < totalSteps ? (
               <button
