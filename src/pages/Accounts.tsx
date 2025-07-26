@@ -56,6 +56,8 @@ export const Accounts: React.FC = () => {
     console.log('💳 Conta processada com sucesso - reatividade ativa')
   }
 
+
+
   // Recalcular saldo total sempre que as contas mudarem
   const totalBalance = React.useMemo(() => {
     const total = accounts.reduce((sum, account) => sum + Number(account.saldo || 0), 0)
@@ -95,6 +97,7 @@ export const Accounts: React.FC = () => {
                 {showBalances ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                 {showBalances ? 'Ocultar Saldos' : 'Mostrar Saldos'}
               </button>
+
               <button 
                 onClick={() => setShowForm(true)}
                 disabled={creating}

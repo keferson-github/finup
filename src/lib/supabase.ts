@@ -10,12 +10,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   realtime: {
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: 20,
+      heartbeatIntervalMs: 30000,
+      reconnectAfterMs: (tries: number) => Math.min(tries * 1000, 10000)
     }
   },
   auth: {
     persistSession: true,
-    autoRefreshToken: true
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  },
+  global: {
+    headers: {
+      'x-client-info': 'finup-frontend'
+    }
   }
 })
 

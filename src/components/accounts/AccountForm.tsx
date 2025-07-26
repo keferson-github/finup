@@ -340,7 +340,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
-      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[70vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out mt-36">
+      <div className="bg-canvas-default dark:bg-canvas-dark-default rounded-2xl w-full max-w-lg max-h-[70vh] overflow-hidden border border-border-default dark:border-border-dark-default flex flex-col transform transition-all duration-300 ease-in-out">
         {/* Fixed Header */}
         <div className="p-4 sm:p-5 border-b border-border-default dark:border-border-dark-default flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
