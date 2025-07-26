@@ -60,8 +60,14 @@ export const Accounts: React.FC = () => {
   const totalBalance = React.useMemo(() => {
     const total = accounts.reduce((sum, account) => sum + Number(account.saldo || 0), 0)
     console.log('💳 📊 Saldo total recalculado:', formatCurrency(total), 'Contas:', accounts.length)
+    console.log('💳 📋 Lista atual de contas:', accounts.map(acc => `${acc.nome} (${acc.id.slice(-8)})`).join(', '))
     return total
   }, [accounts])
+
+  // Log para monitorar re-renderizações
+  React.useEffect(() => {
+    console.log('💳 🔄 Componente Accounts re-renderizado - Total de contas:', accounts.length)
+  })
 
   if (loading) {
     return (
@@ -146,7 +152,7 @@ export const Accounts: React.FC = () => {
             <div className="card">
               <div className="divide-y divide-border-default dark:divide-border-dark-default">
                 {accounts.map((account) => (
-                  <div key={account.id} className="p-4 hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors">
+                  <div key={`${account.id}-${account.atualizado_em}`} className="p-4 hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
                         <div 

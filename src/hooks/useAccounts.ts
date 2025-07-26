@@ -106,6 +106,12 @@ export const useAccounts = () => {
 
       toast.success('Conta criada com sucesso!')
 
+      // Fallback: recarregar dados após um pequeno delay para garantir sincronização
+      setTimeout(() => {
+        console.log('💳 🔄 Fallback: recarregando contas após criação')
+        loadAccounts()
+      }, 1000)
+
       // Disparar atualização do dashboard
       triggerDashboardUpdate('account')
 
@@ -164,6 +170,12 @@ export const useAccounts = () => {
       })
 
       toast.success('Conta atualizada com sucesso!')
+
+      // Fallback: recarregar dados após um pequeno delay para garantir sincronização
+      setTimeout(() => {
+        console.log('💳 🔄 Fallback: recarregando contas após atualização')
+        loadAccounts()
+      }, 1000)
 
       // Disparar atualização do dashboard
       triggerDashboardUpdate('account')
@@ -253,11 +265,17 @@ export const useAccounts = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('💳 🚀 Inicializando useAccounts para usuário:', user.id)
       loadAccounts()
 
       // Configurar listener para mudanças em tempo real
       const channel = supabase
-        .channel('accounts-changes')
+        .channel(`accounts-changes-${user.id}`, {
+          config: {
+            broadcast: { self: false },
+            presence: { key: user.id }
+          }
+        })
         .on(
           'postgres_changes',
           {
@@ -267,26 +285,29 @@ export const useAccounts = () => {
             filter: `user_id=eq.${user.id}`
           },
           (payload) => {
-            console.log('💳 Mudança detectada na tabela accounts:', payload)
+            console.log('💳 🔄 Mudança detectada na tabela accounts:', payload.eventType, payload)
             
             if (payload.eventType === 'INSERT') {
               const newAccount = payload.new as Account
+              console.log('💳 📥 INSERT detectado:', newAccount.nome, 'Ativo:', newAccount.ativo)
               if (newAccount.ativo) {
                 setAccounts(prevAccounts => {
                   // Verificar se a conta já existe para evitar duplicatas
                   const exists = prevAccounts.some(acc => acc.id === newAccount.id)
                   if (!exists) {
-                    console.log('💳 🔄 Nova conta via realtime:', newAccount.nome)
-                    return [...prevAccounts, newAccount].sort((a, b) => 
+                    const updatedAccounts = [...prevAccounts, newAccount].sort((a, b) => 
                       new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
                     )
+                    console.log('💳 ✅ Nova conta adicionada via realtime:', newAccount.nome, 'Total:', updatedAccounts.length)
+                    return updatedAccounts
                   }
-                  console.log('💳 🔄 Conta já existe (realtime):', newAccount.nome)
+                  console.log('💳 ⚠️ Conta já existe (realtime):', newAccount.nome)
                   return prevAccounts
                 })
               }
             } else if (payload.eventType === 'UPDATE') {
               const updatedAccount = payload.new as Account
+              console.log('💳 📝 UPDATE detectado:', updatedAccount.nome, 'Ativo:', updatedAccount.ativo)
               setAccounts(prevAccounts => {
                 if (updatedAccount.ativo) {
                   // Verificar se a conta existe antes de atualizar
@@ -295,36 +316,46 @@ export const useAccounts = () => {
                     const updated = prevAccounts.map(account =>
                       account.id === updatedAccount.id ? updatedAccount : account
                     )
-                    console.log('💳 🔄 Conta atualizada via realtime:', updatedAccount.nome)
+                    console.log('💳 ✅ Conta atualizada via realtime:', updatedAccount.nome)
                     return updated
                   } else {
                     // Adicionar conta se não existe (caso edge)
-                    console.log('💳 🔄 Adicionando conta inexistente via realtime:', updatedAccount.nome)
-                    return [...prevAccounts, updatedAccount].sort((a, b) => 
+                    const updatedAccounts = [...prevAccounts, updatedAccount].sort((a, b) => 
                       new Date(a.criado_em).getTime() - new Date(b.criado_em).getTime()
                     )
+                    console.log('💳 ✅ Adicionando conta inexistente via realtime:', updatedAccount.nome, 'Total:', updatedAccounts.length)
+                    return updatedAccounts
                   }
                 } else {
                   // Remover conta se foi desativada
                   const filtered = prevAccounts.filter(account => account.id !== updatedAccount.id)
-                  console.log('💳 🔄 Conta desativada via realtime:', updatedAccount.nome)
+                  console.log('💳 ✅ Conta desativada via realtime:', updatedAccount.nome, 'Total:', filtered.length)
                   return filtered
                 }
               })
             } else if (payload.eventType === 'DELETE') {
               const deletedAccount = payload.old as Account
+              console.log('💳 🗑️ DELETE detectado:', deletedAccount.nome)
               setAccounts(prevAccounts => {
                 const filtered = prevAccounts.filter(account => account.id !== deletedAccount.id)
-                console.log('💳 🔄 Conta deletada via realtime:', deletedAccount.nome)
+                console.log('💳 ✅ Conta deletada via realtime:', deletedAccount.nome, 'Total:', filtered.length)
                 return filtered
               })
             }
           }
         )
-        .subscribe()
+        .subscribe((status) => {
+          console.log('💳 📡 Status da subscrição realtime:', status)
+          if (status === 'SUBSCRIBED') {
+            console.log('💳 ✅ Listener realtime ativo para contas')
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('💳 ❌ Erro no canal realtime para contas')
+          }
+        })
 
       // Cleanup function
       return () => {
+        console.log('💳 🧹 Limpando listener realtime para contas')
         supabase.removeChannel(channel)
       }
     }
