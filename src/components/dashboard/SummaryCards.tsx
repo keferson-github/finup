@@ -62,17 +62,17 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
       {/* Saldo Consolidado */}
       <div className="card">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Saldo Total</p>
-            <p className="text-3xl font-bold text-fg-default dark:text-fg-dark-default mt-2">
+            <p className="text-2xl font-bold text-fg-default dark:text-fg-dark-default mt-1 truncate">
               {formatCurrency(data?.saldoConsolidado)}
             </p>
             <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1">
               Todas as contas
             </p>
           </div>
-          <div className="w-12 h-12 bg-accent-subtle dark:bg-accent-dark-subtle rounded-lg flex items-center justify-center">
-            <DollarSign className="h-6 w-6 text-accent-fg dark:text-accent-dark-fg" />
+          <div className="w-10 h-10 bg-accent-subtle dark:bg-accent-dark-subtle rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+            <DollarSign className="h-5 w-5 text-accent-fg dark:text-accent-dark-fg" />
           </div>
         </div>
       </div>
@@ -80,17 +80,17 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
       {/* Receitas do Mês */}
       <div className="card">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Receitas do Mês</p>
-            <p className="text-3xl font-bold text-success-fg dark:text-success-dark-fg mt-2">
+            <p className="text-2xl font-bold text-success-fg dark:text-success-dark-fg mt-1 truncate">
               {formatCurrency(data?.totalReceitas)}
             </p>
             <p className={`text-xs mt-1 ${getPercentageColor(data?.comparativoComMesAnterior?.receitas)}`}>
               {formatPercentage(data?.comparativoComMesAnterior?.receitas)} vs mês anterior
             </p>
           </div>
-          <div className="w-12 h-12 bg-success-subtle dark:bg-success-dark-subtle rounded-lg flex items-center justify-center">
-            <TrendingUp className="h-6 w-6 text-success-fg dark:text-success-dark-fg" />
+          <div className="w-10 h-10 bg-success-subtle dark:bg-success-dark-subtle rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+            <TrendingUp className="h-5 w-5 text-success-fg dark:text-success-dark-fg" />
           </div>
         </div>
       </div>
@@ -98,17 +98,17 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
       {/* Despesas do Mês */}
       <div className="card">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Despesas do Mês</p>
-            <p className="text-3xl font-bold text-danger-fg dark:text-danger-dark-fg mt-2">
+            <p className="text-2xl font-bold text-danger-fg dark:text-danger-dark-fg mt-1 truncate">
               {formatCurrency(data?.totalDespesas)}
             </p>
             <p className={`text-xs mt-1 ${getPercentageColor(data?.comparativoComMesAnterior?.despesas)}`}>
               {formatPercentage(data?.comparativoComMesAnterior?.despesas)} vs mês anterior
             </p>
           </div>
-          <div className="w-12 h-12 bg-danger-subtle dark:bg-danger-dark-subtle rounded-lg flex items-center justify-center">
-            <TrendingDown className="h-6 w-6 text-danger-fg dark:text-danger-dark-fg" />
+          <div className="w-10 h-10 bg-danger-subtle dark:bg-danger-dark-subtle rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+            <TrendingDown className="h-5 w-5 text-danger-fg dark:text-danger-dark-fg" />
           </div>
         </div>
       </div>
@@ -116,9 +116,9 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
       {/* Saldo do Mês */}
       <div className="card">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-fg-muted dark:text-fg-dark-muted">Saldo do Mês</p>
-            <p className={`text-3xl font-bold mt-2 ${
+            <p className={`text-2xl font-bold mt-1 truncate ${
               (data?.saldoMesAtual || 0) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
             }`}>
               {formatCurrency(data?.saldoMesAtual)}
@@ -127,10 +127,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data, loading }) => 
               {formatPercentage(data?.comparativoComMesAnterior?.saldo)} vs mês anterior
             </p>
           </div>
-          <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ml-3 ${
             (data?.saldoMesAtual || 0) >= 0 ? 'bg-success-subtle dark:bg-success-dark-subtle' : 'bg-danger-subtle dark:bg-danger-dark-subtle'
           }`}>
-            <CreditCard className={`h-6 w-6 ${
+            <CreditCard className={`h-5 w-5 ${
               (data?.saldoMesAtual || 0) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
             }`} />
           </div>
