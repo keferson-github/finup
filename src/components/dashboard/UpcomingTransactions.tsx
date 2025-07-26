@@ -122,42 +122,6 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
           </button>
         </div>
         
-        {/* Filtros */}
-        {showFilters && (
-          <div className="mt-4 p-4 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg space-y-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[120px]">
-                <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                  Tipo
-                </label>
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value as FilterType)}
-                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
-                >
-                  <option value="todos">Todos</option>
-                  <option value="receita">Receitas</option>
-                  <option value="despesa">Despesas</option>
-                </select>
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                  Período
-                </label>
-                <select
-                  value={periodFilter}
-                  onChange={(e) => setPeriodFilter(e.target.value as PeriodFilter)}
-                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
-                >
-                  <option value="7dias">Próximos 7 dias</option>
-                  <option value="15dias">Próximos 15 dias</option>
-                  <option value="30dias">Próximos 30 dias</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        )}
-        
         {/* Estatísticas Rápidas */}
         <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-bg-subtle dark:bg-bg-dark-subtle p-3 rounded-lg">
@@ -201,6 +165,42 @@ export const UpcomingTransactions: React.FC<UpcomingTransactionsProps> = ({ data
             </p>
           </div>
         </div>
+        
+        {/* Filtros */}
+        {showFilters && (
+          <div className="mt-4 p-4 bg-bg-subtle dark:bg-bg-dark-subtle rounded-lg space-y-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1 min-w-[120px]">
+                <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                  Tipo
+                </label>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value as FilterType)}
+                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
+                >
+                  <option value="todos">Todos</option>
+                  <option value="receita">Receitas</option>
+                  <option value="despesa">Despesas</option>
+                </select>
+              </div>
+              <div className="flex-1 min-w-[120px]">
+                <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
+                  Período
+                </label>
+                <select
+                  value={periodFilter}
+                  onChange={(e) => setPeriodFilter(e.target.value as PeriodFilter)}
+                  className="w-full px-3 py-2 bg-bg-default dark:bg-bg-dark-default border border-border-default dark:border-border-dark-default rounded-md text-fg-default dark:text-fg-dark-default"
+                >
+                  <option value="7dias">Próximos 7 dias</option>
+                  <option value="15dias">Próximos 15 dias</option>
+                  <option value="30dias">Próximos 30 dias</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="p-6 pt-0">
