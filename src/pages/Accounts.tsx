@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff, Building2 } from 'lucide-react'
+import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff, Building2, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { AccountForm } from '../components/accounts/AccountForm'
@@ -8,7 +8,7 @@ import { getLogoById } from '../data/logos'
 import { Account } from '../hooks/useAccounts'
 
 export const Accounts: React.FC = () => {
-  const { accounts, loading, creating, updating, deleteAccount } = useAccounts()
+  const { accounts, loading, creating, updating, deleteAccount, loadAccounts } = useAccounts()
   const [showForm, setShowForm] = useState(false)
   const [editingAccount, setEditingAccount] = useState<Account | null>(null)
   const [showBalances, setShowBalances] = useState(true)
@@ -96,6 +96,16 @@ export const Accounts: React.FC = () => {
               >
                 {showBalances ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                 {showBalances ? 'Ocultar Saldos' : 'Mostrar Saldos'}
+              </button>
+
+              <button
+                onClick={loadAccounts}
+                disabled={loading}
+                className="flex items-center px-4 py-2 text-fg-muted dark:text-fg-dark-muted hover:text-fg-default dark:hover:text-fg-dark-default transition-colors disabled:opacity-50"
+                title="Atualizar lista de contas"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Atualizar
               </button>
 
               <button 

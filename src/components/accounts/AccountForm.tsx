@@ -206,7 +206,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
     {
       id: 3,
       title: 'Configurações Financeiras',
-      description: 'Saldo inicial da conta',
+      description: 'Saldo da conta',
       fields: ['saldo_inicial']
     },
     {
@@ -232,7 +232,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         }
         return watchBanco && watchBanco.trim().length > 0
       case 3:
-        return true // Saldo inicial é opcional
+        return true // Saldo é opcional
       case 4:
         return watchColor && watchColor.trim().length > 0 && watchDescricao && watchDescricao.trim().length > 0
       default:
@@ -568,7 +568,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
             {(currentStep === 3 || mode === 'edit') && (
               <div>
                 <label className="block text-sm font-medium text-fg-default dark:text-fg-dark-default mb-2">
-                  Saldo Inicial
+                  Saldo
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg-muted dark:text-fg-dark-muted" />
