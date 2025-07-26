@@ -32,6 +32,7 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
   }) => {
     if (!user) return
 
+    console.log('🔄 Carregando transações do servidor...', filters ? 'com filtros' : 'sem filtros')
     try {
       setLoading(true)
       
@@ -86,6 +87,7 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
         } : null
       })) || []
 
+      console.log('✅ Transações carregadas do servidor:', formattedTransactions.length)
       setTransactions(formattedTransactions)
     } catch (error: any) {
       console.error('Error loading transactions:', error)
@@ -163,8 +165,24 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
         }
       }
 
+      // Atualizar estado local imediatamente para feedback instantâneo
+      const newTransaction = {
+        ...data,
+        account: { name: 'Carregando...', color: '#6B7280' },
+        category: null
+      }
+      
+      setTransactions(prevTransactions => {
+        console.log('💰 Adicionando nova transação ao estado local:', data.titulo)
+        return [newTransaction, ...prevTransactions]
+      })
+
       toast.success('Transaction created successfully!')
-      await loadTransactions()
+      
+      // Recarregar dados do servidor para garantir sincronização
+      setTimeout(async () => {
+        await loadTransactions()
+      }, 100)
       
       // Notify dashboard to refresh
       if (onTransactionChange) {
@@ -172,6 +190,7 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       }
 
       // Disparar atualização do dashboard
+      console.log('📤 Disparando atualização do dashboard para transação criada:', data.titulo)
       triggerDashboardUpdate('transaction')
       
       return { success: true, data }
@@ -196,8 +215,20 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
 
       if (error) throw error
 
+      // Atualizar estado local imediatamente
+      setTransactions(prevTransactions => {
+        console.log('📝 Atualizando transação no estado local:', id)
+        return prevTransactions.map(transaction => 
+          transaction.id === id ? { ...transaction, ...data } : transaction
+        )
+      })
+
       toast.success('Transaction updated successfully!')
-      await loadTransactions()
+      
+      // Recarregar dados do servidor para garantir sincronização
+      setTimeout(async () => {
+        await loadTransactions()
+      }, 100)
       
       // Notify dashboard to refresh
       if (onTransactionChange) {
@@ -205,6 +236,7 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       }
 
       // Disparar atualização do dashboard
+      console.log('📤 Disparando atualização do dashboard para transação atualizada:', id)
       triggerDashboardUpdate('transaction')
       
       return { success: true, data }
@@ -227,8 +259,18 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
 
       if (error) throw error
 
+      // Remover do estado local imediatamente
+      setTransactions(prevTransactions => {
+        console.log('🗑️ Removendo transação do estado local:', id)
+        return prevTransactions.filter(transaction => transaction.id !== id)
+      })
+
       toast.success('Transaction deleted successfully!')
-      await loadTransactions()
+      
+      // Recarregar dados do servidor para garantir sincronização
+      setTimeout(async () => {
+        await loadTransactions()
+      }, 100)
       
       // Notify dashboard to refresh
       if (onTransactionChange) {
@@ -236,6 +278,7 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       }
 
       // Disparar atualização do dashboard
+      console.log('📤 Disparando atualização do dashboard para transação deletada:', id)
       triggerDashboardUpdate('transaction')
       
       return { success: true }
@@ -257,6 +300,37 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
   useEffect(() => {
     if (user) {
       loadTransactions()
+    }
+  }, [user])
+
+  // Subscription para atualizações em tempo real
+  useEffect(() => {
+    if (!user) return
+
+    console.log('🔗 Configurando subscription para transações...')
+    const subscription = supabase
+      .channel('transactions-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transactions',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          const transactionTitle = (payload.new as any)?.titulo || (payload.old as any)?.titulo || 'Transação desconhecida'
+          console.log('🔔 Transação modificada via subscription:', payload.eventType, transactionTitle)
+          setTimeout(() => {
+            loadTransactions()
+          }, 100)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      console.log('🔌 Desconectando subscription de transações')
+      supabase.removeChannel(subscription)
     }
   }, [user])
 

@@ -9,6 +9,7 @@ interface CategoryChartProps {
 }
 
 export const CategoryChart: React.FC<CategoryChartProps> = ({ data, loading }) => {
+  console.log('📊 CategoryChart renderizado com dados:', data?.length || 0, 'categorias')
   const formatCurrency = (value: number | undefined | null) => {
     const validValue = typeof value === 'number' && !isNaN(value) ? value : 0
     return new Intl.NumberFormat('pt-BR', {

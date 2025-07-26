@@ -17,7 +17,17 @@ export const Categories: React.FC = () => {
   const incomeCategories = categories.filter(cat => cat.tipo === 'receita')
   const expenseCategories = categories.filter(cat => cat.tipo === 'despesa')
 
+  // Log para debug - ver quando as categorias mudam
+  React.useEffect(() => {
+    console.log('📋 Categorias atualizadas na página:', {
+      total: categories.length,
+      receitas: incomeCategories.length,
+      despesas: expenseCategories.length
+    })
+  }, [categories, incomeCategories.length, expenseCategories.length])
+
   const handleEdit = (category: any) => {
+    console.log('✏️ Iniciando edição da categoria:', category)
     setEditingCategory(category)
     setShowForm(true)
   }
@@ -28,9 +38,16 @@ export const Categories: React.FC = () => {
   }
 
   const handleCloseForm = () => {
+    console.log('🔒 Fechando formulário de categoria')
     setShowForm(false)
     setEditingCategory(null)
-    // Não é necessário recarregar as categorias aqui, pois o estado já foi atualizado no hook useCategories
+  }
+
+  const handleCategorySuccess = () => {
+    console.log('🎉 Categoria salva com sucesso, forçando re-render da página')
+    // Força um re-render da página
+    setShowForm(false)
+    setEditingCategory(null)
   }
 
   const handleCloseDeleteModal = () => {
@@ -44,23 +61,25 @@ export const Categories: React.FC = () => {
     setShowForm(true)
   }
 
-  const CategoryCard = ({ category }: { category: any }) => (
-    <div className="card p-3 transition-colors">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <div 
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-            style={{ backgroundColor: `${category.cor}20` }}
-          >
-            {category.icone}
+  const CategoryCard = ({ category }: { category: any }) => {
+    console.log('🎴 Renderizando CategoryCard:', category.nome, category.id)
+    return (
+      <div className="card p-3 transition-colors">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+              style={{ backgroundColor: `${category.cor}20` }}
+            >
+              {category.icone}
+            </div>
+            <div className="ml-2">
+              <h4 className="font-medium text-sm text-fg-default dark:text-fg-dark-default">{category.nome}</h4>
+              {category.descricao && (
+                <p className="text-xs text-fg-muted dark:text-fg-dark-muted">{category.descricao}</p>
+              )}
+            </div>
           </div>
-          <div className="ml-2">
-            <h4 className="font-medium text-sm text-fg-default dark:text-fg-dark-default">{category.nome}</h4>
-            {category.descricao && (
-              <p className="text-xs text-fg-muted dark:text-fg-dark-muted">{category.descricao}</p>
-            )}
-          </div>
-        </div>
         <div className="flex items-center space-x-1">
           <button
             onClick={() => handleEdit(category)}
@@ -79,7 +98,8 @@ export const Categories: React.FC = () => {
         </div>
       </div>
     </div>
-  )
+    )
+  }
 
   return (
     <div className="p-4">
@@ -153,7 +173,7 @@ export const Categories: React.FC = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {incomeCategories.map((category) => (
-                      <CategoryCard key={category.id} category={category} />
+                      <CategoryCard key={`${category.id}-${category.nome}-${category.descricao}`} category={category} />
                     ))}
                   </div>
                 )
@@ -175,7 +195,7 @@ export const Categories: React.FC = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {expenseCategories.map((category) => (
-                      <CategoryCard key={category.id} category={category} />
+                      <CategoryCard key={`${category.id}-${category.nome}-${category.descricao}`} category={category} />
                     ))}
                   </div>
                 )
@@ -190,6 +210,7 @@ export const Categories: React.FC = () => {
       <CategoryForm
         isOpen={showForm}
         onClose={handleCloseForm}
+        onSuccess={handleCategorySuccess}
         initialData={editingCategory}
         mode={editingCategory && editingCategory.id ? 'edit' : 'create'}
       />

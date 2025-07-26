@@ -18,6 +18,7 @@ const Reports = React.lazy(() => import('./pages/Reports').then(module => ({ def
 const Calendar = React.lazy(() => import('./pages/Calendar').then(module => ({ default: module.Calendar })))
 const Budgets = React.lazy(() => import('./pages/Budgets').then(module => ({ default: module.Budgets })))
 const Settings = React.lazy(() => import('./pages/Settings').then(module => ({ default: module.Settings })))
+const TestSync = React.lazy(() => import('./pages/TestSync').then(module => ({ default: module.TestSync })))
 
 const AppRoutes: React.FC = () => {
   const { user, loading } = useAuthContext()
@@ -58,6 +59,7 @@ const AppRoutes: React.FC = () => {
                       <Route path="/calendar" element={<Calendar />} />
                       <Route path="/budgets" element={<Budgets />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/test-sync" element={<TestSync />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </Suspense>

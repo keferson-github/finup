@@ -217,6 +217,7 @@ export const useDashboard = () => {
   const loadCategorySummary = async () => {
     if (!user) return
 
+    console.log('🔄 Carregando resumo de categorias...')
     try {
       const now = new Date()
       const monthStart = format(startOfMonth(now), 'yyyy-MM-dd')
@@ -285,6 +286,7 @@ export const useDashboard = () => {
         .sort((a, b) => b.total - a.total)
         .slice(0, 8) // Top 8 categorias
 
+      console.log('✅ Resumo de categorias carregado:', categoryData.length, 'categorias')
       setCategorySummary(categoryData)
 
     } catch (error: any) {
@@ -573,6 +575,7 @@ export const useDashboard = () => {
   const refreshDashboardSilently = useCallback(async () => {
     if (!user) return
 
+    console.log('🔄 Iniciando refresh silencioso do dashboard...')
     try {
       await Promise.all([
         loadDashboardSummary(),
@@ -582,6 +585,7 @@ export const useDashboard = () => {
         loadUpcomingTransactions(),
         loadBudgetStatus()
       ])
+      console.log('✅ Refresh silencioso do dashboard concluído')
     } catch (error) {
       console.error('Erro ao atualizar dados do dashboard:', error)
     }
@@ -602,9 +606,13 @@ export const useDashboard = () => {
           table: 'transactions',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
-          console.log('Transação modificada - atualizando dashboard')
-          setTimeout(() => refreshDashboardSilently(), 100)
+        (payload) => {
+          const transactionTitle = (payload.new as any)?.titulo || (payload.old as any)?.titulo || 'Transação desconhecida'
+          console.log('🔔 Transação modificada - atualizando dashboard', payload.eventType, transactionTitle)
+          setTimeout(() => {
+            console.log('🔄 Executando refresh do dashboard devido a mudança em transação')
+            refreshDashboardSilently()
+          }, 100)
         }
       )
       .subscribe()
@@ -620,9 +628,13 @@ export const useDashboard = () => {
           table: 'accounts',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
-          console.log('Conta modificada - atualizando dashboard')
-          setTimeout(() => refreshDashboardSilently(), 100)
+        (payload) => {
+          const accountName = (payload.new as any)?.nome || (payload.old as any)?.nome || 'Conta desconhecida'
+          console.log('🔔 Conta modificada - atualizando dashboard', payload.eventType, accountName)
+          setTimeout(() => {
+            console.log('🔄 Executando refresh do dashboard devido a mudança em conta')
+            refreshDashboardSilently()
+          }, 100)
         }
       )
       .subscribe()
@@ -638,9 +650,12 @@ export const useDashboard = () => {
           table: 'categories',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
-          console.log('Categoria modificada - atualizando dashboard')
-          setTimeout(() => refreshDashboardSilently(), 100)
+        (payload) => {
+          console.log('Categoria modificada - atualizando dashboard', payload)
+          setTimeout(() => {
+            console.log('Executando refresh silencioso do dashboard devido a mudança em categoria')
+            refreshDashboardSilently()
+          }, 100)
         }
       )
       .subscribe()
@@ -651,7 +666,7 @@ export const useDashboard = () => {
       supabase.removeChannel(accountsSubscription)
       supabase.removeChannel(categoriesSubscription)
     }
-  }, [user, refreshDashboardSilently])
+  }, [user])
 
   useEffect(() => {
     if (user) {

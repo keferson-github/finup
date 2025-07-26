@@ -17,6 +17,7 @@ type CategoryFormData = z.infer<typeof categorySchema>
 interface CategoryFormProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
   initialData?: Partial<CategoryFormData & { id: string }>
   mode?: 'create' | 'edit'
 }
@@ -28,6 +29,7 @@ interface CategoryFormProps {
 export const CategoryForm: React.FC<CategoryFormProps> = ({
   isOpen,
   onClose,
+  onSuccess,
   initialData,
   mode = 'create'
 }) => {
@@ -50,18 +52,30 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     }
   })
   
+  // Resetar formulário quando dados iniciais mudarem
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        tipo: 'despesa',
+        ...initialData
+      })
+    }
+  }, [initialData, reset])
+
   // Adicionar efeito de foco no campo de nome
   useEffect(() => {
-    // Pequeno atraso para garantir que o modal foi aberto
-    const timer = setTimeout(() => {
-      const nomeInput = document.querySelector('input[name="nome"]');
-      if (nomeInput) {
-        (nomeInput as HTMLInputElement).focus();
-      }
-    }, 400);
-    
-    return () => clearTimeout(timer);
-  }, [])
+    if (isOpen) {
+      // Pequeno atraso para garantir que o modal foi aberto
+      const timer = setTimeout(() => {
+        const nomeInput = document.querySelector('input[name="nome"]');
+        if (nomeInput) {
+          (nomeInput as HTMLInputElement).focus();
+        }
+      }, 400);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen])
 
   const watchTipo = watch('tipo')
 
@@ -82,20 +96,24 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     
     try {
       if (mode === 'create') {
+        console.log('📝 Criando nova categoria:', data.nome)
         const result = await createCategory(data);
         if (result.success) {
+          console.log('✅ Categoria criada com sucesso, notificando página pai')
           reset();
+          if (onSuccess) onSuccess();
           onClose();
         }
       } else if (mode === 'edit' && initialData?.id) {
-        // Para edição, atualizamos a categoria e mantemos o modal aberto até a conclusão
+        console.log('📝 Iniciando edição da categoria:', initialData.id, data)
         const result = await updateCategory(initialData.id, data);
         if (result.success) {
-          // Atualizar os dados iniciais para refletir as mudanças
-          // Isso permite que o usuário veja as alterações imediatamente
-          // Fechar o modal apenas após a conclusão bem-sucedida
+          console.log('✅ Categoria editada com sucesso, notificando página pai')
           reset(data);
+          if (onSuccess) onSuccess();
           onClose();
+        } else {
+          console.error('❌ Erro ao editar categoria:', result.error)
         }
       } else {
         console.error('Modo inválido ou ID não fornecido para edição');

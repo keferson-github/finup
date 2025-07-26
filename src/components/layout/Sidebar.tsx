@@ -9,7 +9,8 @@ import {
   Calendar,
   Target,
   Settings,
-  LogOut
+  LogOut,
+  Bug
 } from 'lucide-react'
 import { useAuthContext } from '../../contexts/AuthContext'
 import { Logo } from '../ui/Logo'
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Calendário', href: '/calendar', icon: Calendar },
   { name: 'Orçamentos', href: '/budgets', icon: Target },
   { name: 'Configurações', href: '/settings', icon: Settings },
+  { name: 'Teste Sync', href: '/test-sync', icon: Bug },
 ]
 
 export const Sidebar: React.FC = () => {

@@ -1,13 +1,12 @@
 import React from 'react'
 import { Plus, CreditCard, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { AccountForm } from '../components/accounts/AccountForm'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
-import { BankLogos, CreditCardLogos } from '../components/accounts/BankLogos'
 
 export const Accounts: React.FC = () => {
-  const { accounts, loading, deleteAccount, loadAccounts } = useAccounts()
+  const { accounts, loading, deleteAccount } = useAccounts()
   const [showForm, setShowForm] = useState(false)
   const [editingAccount, setEditingAccount] = useState<any>(null)
   const [showBalances, setShowBalances] = useState(true)
@@ -30,17 +29,6 @@ export const Accounts: React.FC = () => {
     return types[type as keyof typeof types] || type
   }
 
-  const getAccountLogo = (account: any) => {
-    if (account.tipo === 'cartao_credito' && account.bandeira_cartao) {
-      const LogoComponent = CreditCardLogos[account.bandeira_cartao as keyof typeof CreditCardLogos]
-      return LogoComponent ? <LogoComponent /> : null
-    } else if (['conta_corrente', 'poupanca', 'investimento'].includes(account.tipo) && account.banco) {
-      const LogoComponent = BankLogos[account.banco as keyof typeof BankLogos]
-      return LogoComponent ? <LogoComponent /> : null
-    }
-    return null
-  }
-
   const handleEdit = (account: any) => {
     setEditingAccount(account)
     setShowForm(true)
@@ -57,16 +45,10 @@ export const Accounts: React.FC = () => {
     setEditingAccount(null)
   }
 
-  const handleAccountSuccess = async () => {
-    // Força o recarregamento da lista de contas
-    await loadAccounts()
+  const handleAccountSuccess = () => {
+    // A lista será atualizada automaticamente pelo hook useAccounts
     handleCloseForm()
   }
-
-  // Força recarregamento quando o componente é montado
-  useEffect(() => {
-    loadAccounts()
-  }, [])
 
   const totalBalance = accounts.reduce((sum, account) => sum + Number(account.saldo), 0)
 
@@ -80,13 +62,13 @@ export const Accounts: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Cabeçalho e Total de Contas Fixos */}
+      {/* Cabeçalho Fixo */}
       <div className="sticky top-0 z-10 bg-canvas-default dark:bg-canvas-dark-default border-b border-border-default dark:border-border-dark-default">
-        <div className="p-8 pb-4">
-          <div className="flex items-center justify-between mb-6">
+        <div className="p-8 pb-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-fg-default dark:text-fg-dark-default">Contas</h1>
-              <p className="text-fg-muted dark:text-fg-dark-muted mt-1">Gerencie suas contas financeiras</p>
+              <h1 className="text-3xl font-bold text-fg-default dark:text-fg-dark-default">Contas</h1>
+              <p className="text-fg-muted dark:text-fg-dark-muted mt-2">Gerencie suas contas financeiras</p>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -96,7 +78,7 @@ export const Accounts: React.FC = () => {
                 {showBalances ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                 {showBalances ? 'Ocultar Saldos' : 'Mostrar Saldos'}
               </button>
-              <button
+              <button 
                 onClick={() => setShowForm(true)}
                 className="btn btn-primary flex items-center"
               >
@@ -105,30 +87,29 @@ export const Accounts: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Card Total de Contas Fixo */}
+      {/* Conteúdo Rolável */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-8 pt-6">
+          {/* Resumo Total */}
           {accounts.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-500 to-emerald-500 rounded-xl p-5 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-emerald-500 rounded-xl p-6 mb-8 text-white">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-100 text-sm">Saldo Total</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-3xl font-bold">
                     {showBalances ? formatCurrency(totalBalance) : '••••••'}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-blue-100 text-sm">Total de Contas</p>
-                  <p className="text-xl font-bold">{accounts.length}</p>
+                  <p className="text-2xl font-bold">{accounts.length}</p>
                 </div>
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Conteúdo Rolável - Apenas Lista de Contas */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 pt-4">
 
           {accounts.length === 0 ? (
             <div className="card">
@@ -136,7 +117,7 @@ export const Accounts: React.FC = () => {
                 <CreditCard className="h-16 w-16 text-fg-muted dark:text-fg-dark-muted mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-fg-default dark:text-fg-dark-default mb-2">Nenhuma conta encontrada</h3>
                 <p className="text-fg-muted dark:text-fg-dark-muted mb-6">Adicione sua primeira conta para começar a gerenciar suas finanças.</p>
-                <button
+                <button 
                   onClick={() => setShowForm(true)}
                   className="btn btn-primary flex items-center mx-auto"
                 >
@@ -146,43 +127,34 @@ export const Accounts: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              {accounts.map((account) => (
-                <div key={account.id} className="card hover:shadow-md transition-all duration-200">
-                  <div className="p-4">
+            <div className="card">
+              <div className="divide-y divide-border-default dark:divide-border-dark-default">
+                {accounts.map((account) => (
+                  <div key={account.id} className="p-4 hover:bg-neutral-subtle dark:hover:bg-neutral-dark-subtle transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0">
-                          {getAccountLogo(account) || (
-                            <div
-                              className="w-9 h-9 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: `${account.cor}20` }}
-                            >
-                              <div
-                                className="w-4 h-4 rounded-full"
-                                style={{ backgroundColor: account.cor }}
-                              />
-                            </div>
-                          )}
+                        <div 
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${account.cor}20` }}
+                        >
+                          <div 
+                            className="w-5 h-5 rounded-full"
+                            style={{ backgroundColor: account.cor }}
+                          />
                         </div>
                         <div className="ml-4 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="min-w-0 flex-1">
-                              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default truncate">
-                                {account.nome}
-                              </h3>
-                              <p className="text-sm text-fg-muted dark:text-fg-dark-muted">
-                                {getAccountTypeLabel(account.tipo)}
-                              </p>
+                              <h3 className="font-semibold text-fg-default dark:text-fg-dark-default truncate">{account.nome}</h3>
+                              <p className="text-sm text-fg-muted dark:text-fg-dark-muted">{getAccountTypeLabel(account.tipo)}</p>
                               {account.descricao && (
-                                <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1 truncate">
-                                  {account.descricao}
-                                </p>
+                                <p className="text-xs text-fg-muted dark:text-fg-dark-muted mt-1 truncate">{account.descricao}</p>
                               )}
                             </div>
                             <div className="ml-4 text-right flex-shrink-0">
-                              <span className={`text-lg font-bold ${Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
-                                }`}>
+                              <span className={`text-lg font-bold ${
+                                Number(account.saldo) >= 0 ? 'text-success-fg dark:text-success-dark-fg' : 'text-danger-fg dark:text-danger-dark-fg'
+                              }`}>
                                 {showBalances ? formatCurrency(Number(account.saldo)) : '••••••'}
                               </span>
                               <p className="text-xs text-fg-muted dark:text-fg-dark-muted">Saldo Atual</p>
@@ -208,8 +180,8 @@ export const Accounts: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

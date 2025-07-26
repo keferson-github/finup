@@ -93,9 +93,11 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined
       }
 
+      console.log('📝 Criando transação via formulário:', transactionData.title)
       const result = await createTransaction(transactionData)
       
       if (result.success) {
+        console.log('✅ Transação criada com sucesso via formulário')
         reset()
         onClose()
       }

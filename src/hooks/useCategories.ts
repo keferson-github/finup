@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuthContext } from '../contexts/AuthContext'
+import { triggerDashboardUpdate } from './useDashboardSync'
 import toast from 'react-hot-toast'
 
 export interface Category {
@@ -23,9 +24,10 @@ export const useCategories = () => {
   const loadCategories = async (tipo?: 'receita' | 'despesa') => {
     if (!user) return
 
+    console.log('🔄 Carregando categorias do servidor...', tipo ? `tipo: ${tipo}` : 'todas')
     try {
       setLoading(true)
-      
+
       let query = supabase
         .from('categories')
         .select('*')
@@ -41,6 +43,7 @@ export const useCategories = () => {
 
       if (error) throw error
 
+      console.log('✅ Categorias carregadas do servidor:', (data || []).length)
       setCategories(data || [])
     } catch (error: any) {
       console.error('Error loading categories:', error)
@@ -74,21 +77,44 @@ export const useCategories = () => {
         toast.error('Já existe uma categoria com este nome para este tipo')
         return { success: false, error: 'Category name already exists for this type' }
       }
-      
+
       const { data, error } = await supabase
         .from('categories')
         .insert({
           ...category,
-          user_id: user.id
+          user_id: user.id,
+          ativo: true
         })
         .select()
         .single()
 
       if (error) throw error
 
+      // Atualizar o estado local imediatamente para feedback instantâneo
+      const newCategory = {
+        ...data,
+        criado_em: new Date().toISOString()
+      }
+
+      setCategories(prevCategories => {
+        console.log('📝 Adicionando nova categoria ao estado local:', newCategory.nome, 'Total anterior:', prevCategories.length)
+        const updatedCategories = [...prevCategories, newCategory]
+        console.log('📝 Total após adição:', updatedCategories.length)
+        return updatedCategories
+      })
+
       toast.success('Categoria criada com sucesso!')
-      await loadCategories()
-      return { success: true, data }
+
+      // Recarregar dados do servidor para garantir sincronização
+      setTimeout(async () => {
+        await loadCategories()
+      }, 100)
+
+      // Disparar atualização do dashboard
+      console.log('📤 Disparando atualização do dashboard para categoria criada:', newCategory.nome)
+      triggerDashboardUpdate('category')
+
+      return { success: true, data: newCategory }
     } catch (error: any) {
       console.error('Error creating category:', error)
       toast.error(error.message || 'Erro ao criar categoria')
@@ -132,15 +158,24 @@ export const useCategories = () => {
       if (error) throw error
 
       // Atualizar o estado local imediatamente para uma resposta mais rápida
-      setCategories(prevCategories => 
-        prevCategories.map(category => 
+      setCategories(prevCategories => {
+        const updatedCategories = prevCategories.map(category =>
           category.id === id ? { ...category, ...data } : category
         )
-      )
-      
+        console.log('📝 Categoria atualizada no estado local:', data.nome)
+        return updatedCategories
+      })
+
       toast.success('Categoria atualizada com sucesso!')
+
       // Carregar categorias em segundo plano para garantir sincronização
-      loadCategories()
+      setTimeout(async () => {
+        await loadCategories()
+      }, 100)
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('category')
+
       return { success: true, data }
     } catch (error: any) {
       console.error('Error updating category:', error)
@@ -203,7 +238,17 @@ export const useCategories = () => {
         toast.success('Categoria excluída com sucesso!')
       }
 
-      await loadCategories()
+      // Atualizar estado local imediatamente
+      setCategories(prevCategories => prevCategories.filter(category => category.id !== id))
+
+      // Recarregar dados do servidor para garantir sincronização
+      setTimeout(async () => {
+        await loadCategories()
+      }, 100)
+
+      // Disparar atualização do dashboard
+      triggerDashboardUpdate('category')
+
       return { success: true }
     } catch (error: any) {
       console.error('Error deleting category:', error)
@@ -249,6 +294,37 @@ export const useCategories = () => {
   useEffect(() => {
     if (user) {
       loadCategories()
+    }
+  }, [user])
+
+  // Subscription para atualizações em tempo real
+  useEffect(() => {
+    if (!user) return
+
+    console.log('🔗 Configurando subscription para categorias...')
+    const subscription = supabase
+      .channel('categories-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'categories',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          const categoryName = (payload.new as any)?.nome || (payload.old as any)?.nome || 'Categoria desconhecida'
+          console.log('🔔 Categoria modificada via subscription:', payload.eventType, categoryName)
+          setTimeout(() => {
+            loadCategories()
+          }, 100)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      console.log('🔌 Desconectando subscription de categorias')
+      supabase.removeChannel(subscription)
     }
   }, [user])
 

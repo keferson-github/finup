@@ -12,11 +12,13 @@ export const useDashboardSync = () => {
     if (!user) return
 
     // Função para atualizar o dashboard
-    const handleDashboardUpdate = () => {
+    const handleDashboardUpdate = (event: Event) => {
+      console.log(`📡 Evento customizado recebido para atualização do dashboard:`, event.type)
       try {
+        console.log('🔄 Chamando refreshDashboardSilently via evento customizado')
         refreshDashboardSilently()
       } catch (error) {
-        console.error('Erro ao atualizar dashboard:', error)
+        console.error('❌ Erro ao atualizar dashboard via evento:', error)
       }
     }
 
@@ -38,5 +40,6 @@ export const useDashboardSync = () => {
 
 // Função utilitária para disparar atualização do dashboard
 export const triggerDashboardUpdate = (type: 'transaction' | 'account' | 'category' | 'budget') => {
+  console.log(`🔔 Disparando evento ${type}Updated para atualização do dashboard`)
   window.dispatchEvent(new CustomEvent(`${type}Updated`))
 }

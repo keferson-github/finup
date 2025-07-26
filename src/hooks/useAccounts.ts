@@ -63,6 +63,7 @@ export const useAccounts = () => {
   }) => {
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
+    console.log('💳 Criando nova conta:', account.nome)
     setCreating(true)
     try {
       const { data, error } = await supabase
@@ -88,14 +89,14 @@ export const useAccounts = () => {
         atualizado_em: new Date().toISOString()
       }
 
-      setAccounts(prevAccounts => [...prevAccounts, newAccount])
+      setAccounts(prevAccounts => {
+        const updatedAccounts = [...prevAccounts, newAccount]
+        console.log('💳 Adicionando nova conta ao estado local:', account.nome, 'Total anterior:', prevAccounts.length)
+        console.log('💳 Total após adição:', updatedAccounts.length)
+        return updatedAccounts
+      })
 
       toast.success('Conta criada com sucesso!')
-
-      // Recarrega os dados do servidor para garantir sincronização
-      setTimeout(async () => {
-        await loadAccounts()
-      }, 100)
 
       // Disparar atualização do dashboard
       triggerDashboardUpdate('account')
@@ -113,6 +114,7 @@ export const useAccounts = () => {
   const updateAccount = async (id: string, updates: Partial<Account>) => {
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
+    console.log('💳 Iniciando edição da conta:', id, updates)
     setUpdating(true)
     try {
       const { data, error } = await supabase
@@ -129,18 +131,16 @@ export const useAccounts = () => {
       if (error) throw error
 
       // Atualiza o estado local imediatamente
-      setAccounts(prevAccounts =>
-        prevAccounts.map(account =>
+      setAccounts(prevAccounts => {
+        const updatedAccounts = prevAccounts.map(account =>
           account.id === id ? { ...account, ...data } : account
         )
-      )
+        console.log('💳 Conta atualizada no estado local:', data.nome, 'ID:', id)
+        console.log('💳 Contas após atualização:', updatedAccounts.length)
+        return updatedAccounts
+      })
 
       toast.success('Conta atualizada com sucesso!')
-
-      // Recarrega os dados do servidor para garantir sincronização
-      setTimeout(async () => {
-        await loadAccounts()
-      }, 100)
 
       // Disparar atualização do dashboard
       triggerDashboardUpdate('account')
@@ -158,6 +158,7 @@ export const useAccounts = () => {
   const deleteAccount = async (id: string) => {
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
+    console.log('💳 Iniciando exclusão da conta:', id)
     setDeleting(true)
     try {
       // Check if account has transactions
@@ -181,7 +182,12 @@ export const useAccounts = () => {
         if (error) throw error
 
         // Remove da lista local imediatamente (soft delete)
-        setAccounts(prevAccounts => prevAccounts.filter(account => account.id !== id))
+        setAccounts(prevAccounts => {
+          const filteredAccounts = prevAccounts.filter(account => account.id !== id)
+          console.log('💳 Conta arquivada (soft delete) - Total anterior:', prevAccounts.length)
+          console.log('💳 Total após arquivamento:', filteredAccounts.length)
+          return filteredAccounts
+        })
 
         toast.success('Conta arquivada com sucesso!')
       } else {
@@ -195,15 +201,15 @@ export const useAccounts = () => {
         if (error) throw error
 
         // Remove da lista local imediatamente (hard delete)
-        setAccounts(prevAccounts => prevAccounts.filter(account => account.id !== id))
+        setAccounts(prevAccounts => {
+          const filteredAccounts = prevAccounts.filter(account => account.id !== id)
+          console.log('💳 Conta excluída (hard delete) - Total anterior:', prevAccounts.length)
+          console.log('💳 Total após exclusão:', filteredAccounts.length)
+          return filteredAccounts
+        })
 
         toast.success('Conta excluída com sucesso!')
       }
-
-      // Recarrega os dados do servidor para garantir sincronização
-      setTimeout(async () => {
-        await loadAccounts()
-      }, 100)
 
       // Disparar atualização do dashboard
       triggerDashboardUpdate('account')
