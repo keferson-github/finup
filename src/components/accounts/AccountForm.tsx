@@ -173,7 +173,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
       case 1:
         const hasBasicInfo = watchNome && watchNome.trim().length > 0 && watchTipo
         if (!hasBasicInfo) return false
-        
+
         // Validação específica por tipo de conta
         if (watchTipo === 'cartao_credito') {
           return watchBandeiraCartao && watchBandeiraCartao.trim().length > 0
@@ -299,10 +299,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 {steps.map((step) => (
                   <div key={step.id} className="flex items-center">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all ${step.id < currentStep
-                        ? 'bg-success-emphasis dark:bg-success-dark-emphasis text-white'
-                        : step.id === currentStep
-                          ? 'bg-accent-emphasis dark:bg-accent-dark-emphasis text-white'
-                          : 'bg-neutral-muted dark:bg-neutral-dark-muted text-fg-muted dark:text-fg-dark-muted'
+                      ? 'bg-success-emphasis dark:bg-success-dark-emphasis text-white'
+                      : step.id === currentStep
+                        ? 'bg-accent-emphasis dark:bg-accent-dark-emphasis text-white'
+                        : 'bg-neutral-muted dark:bg-neutral-dark-muted text-fg-muted dark:text-fg-dark-muted'
                       }`}>
                       {step.id < currentStep ? (
                         <Check className="h-3 w-3" />
@@ -366,9 +366,9 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           {...register('tipo')}
                           className="sr-only"
                         />
-                        <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${watch('tipo') === type.value
-                            ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
-                            : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
+                        <div className={`p-3 border rounded-lg cursor-pointer transition-all flex items-center ${watch('tipo') === type.value
+                          ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
+                          : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
                           }`}>
                           <span className="text-xl mr-3">{type.icon}</span>
                           <span className="font-medium text-fg-default dark:text-fg-dark-default">{type.label}</span>
@@ -393,11 +393,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                             {...register('banco')}
                             className="sr-only"
                           />
-                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${
-                            watchBanco === bank.value
+                          <div className={`p-3 border rounded-lg cursor-pointer transition-all flex items-center ${watchBanco === bank.value
                               ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
                               : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
-                          }`}>
+                            }`}>
                             <bank.logo />
                             <span className="font-medium text-fg-default dark:text-fg-dark-default ml-3 text-sm">{bank.label}</span>
                           </div>
@@ -422,11 +421,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                             {...register('bandeira_cartao')}
                             className="sr-only"
                           />
-                          <div className={`p-3 border-2 rounded-lg cursor-pointer transition-all flex items-center ${
-                            watchBandeiraCartao === card.value
+                          <div className={`p-3 border rounded-lg cursor-pointer transition-all flex items-center ${watchBandeiraCartao === card.value
                               ? 'border-accent-emphasis dark:border-accent-dark-emphasis bg-accent-subtle dark:bg-accent-dark-subtle'
                               : 'border-border-default dark:border-border-default hover:border-border-muted dark:hover:border-border-dark-muted'
-                          }`}>
+                            }`}>
                             <card.logo />
                             <span className="font-medium text-fg-default dark:text-fg-dark-default ml-3 text-sm">{card.label}</span>
                           </div>
@@ -480,7 +478,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                           key={color}
                           type="button"
                           onClick={() => setValue('cor', color)}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110 ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : 'border-border-default dark:border-border-dark-default'
+                          className={`w-8 h-8 rounded-full border transition-all ${watchColor === color ? 'border-fg-default dark:border-fg-dark-default scale-110 ring-2 ring-accent-emphasis dark:ring-accent-dark-emphasis' : 'border-border-default dark:border-border-dark-default'
                             }`}
                           style={{ backgroundColor: color }}
                           aria-label={`Selecionar cor ${color}`}
