@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useCategories } from '../hooks/useCategories'
 import { CategoryForm } from '../components/categories/CategoryForm'
@@ -7,7 +7,7 @@ import { CategoryDeleteModal } from '../components/categories/CategoryDeleteModa
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 
 export const Categories: React.FC = () => {
-  const { categories, loading } = useCategories()
+  const { categories, loading, loadCategories } = useCategories()
   const [showForm, setShowForm] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [editingCategory, setEditingCategory] = useState<any>(null)
@@ -108,13 +108,25 @@ export const Categories: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Categorias</h1>
           <p className="text-gray-600 text-sm mt-1">Organize suas transações</p>
         </div>
-        <button 
-          onClick={() => handleNewCategory()}
-          className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Nova Categoria
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => loadCategories()}
+            disabled={loading}
+            className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50 text-sm"
+            title="Atualizar lista de categorias"
+          >
+            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </button>
+          
+          <button 
+            onClick={() => handleNewCategory()}
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Nova Categoria
+          </button>
+        </div>
       </div>
 
       {loading ? (

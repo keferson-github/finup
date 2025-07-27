@@ -22,11 +22,14 @@ export const useCategories = () => {
   const [loading, setLoading] = useState(false)
 
   const loadCategories = async (tipo?: 'receita' | 'despesa') => {
-    if (!user) return
+    if (!user) {
+      console.log('❌ Usuário não autenticado')
+      return
+    }
 
-    console.log('🔄 Carregando categorias do servidor...', tipo ? `tipo: ${tipo}` : 'todas')
+    setLoading(true)
     try {
-      setLoading(true)
+      console.log('🔄 Carregando categorias do servidor...', { userId: user.id, tipo })
 
       let query = supabase
         .from('categories')
