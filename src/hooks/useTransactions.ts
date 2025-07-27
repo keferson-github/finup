@@ -124,11 +124,25 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
       const { data, error } = await supabase
         .from('transactions')
         .insert({
-          ...transaction,
-          user_id: user.id,
+          titulo: transaction.titulo,
+          descricao: transaction.descricao,
+          valor: transaction.amount,
           tipo: tipoValue,
           status: statusValue,
-          valor: transaction.amount
+          data: transaction.data,
+          account_id: transaction.account_id,
+          category_id: transaction.category_id,
+          eh_parcelamento: transaction.is_installment,
+          total_parcelas: transaction.total_installments,
+          eh_recorrente: transaction.is_recurring,
+          frequencia_recorrencia: transaction.recurring_frequency === 'daily' ? 'diario' :
+                                 transaction.recurring_frequency === 'weekly' ? 'semanal' :
+                                 transaction.recurring_frequency === 'monthly' ? 'mensal' :
+                                 transaction.recurring_frequency === 'yearly' ? 'anual' : undefined,
+          data_fim_recorrencia: transaction.recurring_end_date,
+          tags: transaction.tags,
+          observacoes: transaction.notes,
+          user_id: user.id
         })
         .select()
         .single()
@@ -145,14 +159,21 @@ export const useTransactions = (onTransactionChange?: () => Promise<void>) => {
           installmentDate.setMonth(installmentDate.getMonth() + (i - 1))
           
           installments.push({
-            ...transaction,
-            user_id: user.id,
+            titulo: transaction.titulo,
+            descricao: transaction.descricao,
+            valor: transaction.amount,
             tipo: tipoValue,
             status: 'pendente',
-            valor: transaction.amount,
-            installment_number: i,
             data: installmentDate.toISOString().split('T')[0],
-            parent_transaction_id: data.id,
+            account_id: transaction.account_id,
+            category_id: transaction.category_id,
+            eh_parcelamento: true,
+            numero_parcela: i,
+            total_parcelas: transaction.total_installments,
+            transacao_pai_id: data.id,
+            tags: transaction.tags,
+            observacoes: transaction.notes,
+            user_id: user.id
           })
         }
 
